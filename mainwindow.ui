@@ -20,7 +20,7 @@
       <x>10</x>
       <y>10</y>
       <width>415</width>
-      <height>343</height>
+      <height>383</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="input_params">
@@ -122,32 +122,6 @@
        </item>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="num_groups_combo">
-       <item>
-        <property name="text">
-         <string>Choose Value . . .</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>1</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>2</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="grp_names">
-       <property name="text">
-        <string>Group names:</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
       <widget class="QComboBox" name="analysis_type_combo">
        <item>
@@ -172,10 +146,36 @@
        </item>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="num_groups_combo">
+       <item>
+        <property name="text">
+         <string>Choose Value . . .</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2</string>
+        </property>
+       </item>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="analysis_type">
        <property name="text">
         <string>Stat analysis type:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="grp_names">
+       <property name="text">
+        <string>Group names:</string>
        </property>
       </widget>
      </item>
@@ -209,17 +209,17 @@
      <widget class="QLabel" name="display_pngs">
       <property name="geometry">
        <rect>
-        <x>90</x>
-        <y>20</y>
-        <width>121</width>
-        <height>121</height>
+        <x>0</x>
+        <y>0</y>
+        <width>461</width>
+        <height>511</height>
        </rect>
       </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
       <property name="text">
-       <string>Graph</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -227,13 +227,29 @@
      <attribute name="title">
       <string>Image 2</string>
      </attribute>
+     <widget class="QLabel" name="display_pngs_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>461</width>
+        <height>521</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget_2">
     <property name="geometry">
      <rect>
       <x>540</x>
-      <y>570</y>
+      <y>600</y>
       <width>431</width>
       <height>141</height>
      </rect>
@@ -247,14 +263,14 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="save_all_images">
        <property name="text">
         <string>Save all images</string>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="out_ppt_location_label">
        <property name="text">
         <string>No path chosen</string>
        </property>
@@ -268,7 +284,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="save_one_image">
        <property name="text">
         <string>Save this image only</string>
        </property>
@@ -289,14 +305,14 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="out_png_location_label">
        <property name="text">
         <string>No path chosen</string>
        </property>
       </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="save_ppt">
        <property name="text">
         <string>Save all images to power point</string>
        </property>

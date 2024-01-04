@@ -1,6 +1,8 @@
 {
     "files": [
+        "README.md",
         "mainwindow.py",
-        "mainwindow.ui"
+        "mainwindow.ui",
+        "ui_mainwindow.py"
     ]
 }

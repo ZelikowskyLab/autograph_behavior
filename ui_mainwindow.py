@@ -29,7 +29,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayoutWidget = QWidget(self.centralwidget)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(10, 10, 415, 343))
+        self.gridLayoutWidget.setGeometry(QRect(10, 10, 415, 383))
         self.input_params = QGridLayout(self.gridLayoutWidget)
         self.input_params.setObjectName(u"input_params")
         self.input_params.setSizeConstraint(QLayout.SetDefaultConstraint)
@@ -91,19 +91,6 @@ class Ui_MainWindow(object):
 
         self.input_params.addWidget(self.num_ind_vars_combo, 3, 1, 1, 1)
 
-        self.num_groups_combo = QComboBox(self.gridLayoutWidget)
-        self.num_groups_combo.addItem("")
-        self.num_groups_combo.addItem("")
-        self.num_groups_combo.addItem("")
-        self.num_groups_combo.setObjectName(u"num_groups_combo")
-
-        self.input_params.addWidget(self.num_groups_combo, 1, 1, 1, 1)
-
-        self.grp_names = QLabel(self.gridLayoutWidget)
-        self.grp_names.setObjectName(u"grp_names")
-
-        self.input_params.addWidget(self.grp_names, 2, 0, 1, 1)
-
         self.analysis_type_combo = QComboBox(self.gridLayoutWidget)
         self.analysis_type_combo.addItem("")
         self.analysis_type_combo.addItem("")
@@ -113,10 +100,23 @@ class Ui_MainWindow(object):
 
         self.input_params.addWidget(self.analysis_type_combo, 0, 1, 1, 1)
 
+        self.num_groups_combo = QComboBox(self.gridLayoutWidget)
+        self.num_groups_combo.addItem("")
+        self.num_groups_combo.addItem("")
+        self.num_groups_combo.addItem("")
+        self.num_groups_combo.setObjectName(u"num_groups_combo")
+
+        self.input_params.addWidget(self.num_groups_combo, 1, 1, 1, 1)
+
         self.analysis_type = QLabel(self.gridLayoutWidget)
         self.analysis_type.setObjectName(u"analysis_type")
 
         self.input_params.addWidget(self.analysis_type, 0, 0, 1, 1)
+
+        self.grp_names = QLabel(self.gridLayoutWidget)
+        self.grp_names.setObjectName(u"grp_names")
+
+        self.input_params.addWidget(self.grp_names, 2, 0, 1, 1)
 
         self.images = QTabWidget(self.centralwidget)
         self.images.setObjectName(u"images")
@@ -128,15 +128,19 @@ class Ui_MainWindow(object):
         self.tab.setObjectName(u"tab")
         self.display_pngs = QLabel(self.tab)
         self.display_pngs.setObjectName(u"display_pngs")
-        self.display_pngs.setGeometry(QRect(90, 20, 121, 121))
+        self.display_pngs.setGeometry(QRect(0, 0, 461, 511))
         self.display_pngs.setFrameShape(QFrame.Box)
         self.images.addTab(self.tab, "")
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
+        self.display_pngs_2 = QLabel(self.tab_2)
+        self.display_pngs_2.setObjectName(u"display_pngs_2")
+        self.display_pngs_2.setGeometry(QRect(0, 0, 461, 521))
+        self.display_pngs_2.setFrameShape(QFrame.Box)
         self.images.addTab(self.tab_2, "")
         self.gridLayoutWidget_2 = QWidget(self.centralwidget)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(540, 570, 431, 141))
+        self.gridLayoutWidget_2.setGeometry(QRect(540, 600, 431, 141))
         self.save_graph_options = QGridLayout(self.gridLayoutWidget_2)
         self.save_graph_options.setObjectName(u"save_graph_options")
         self.save_graph_options.setContentsMargins(0, 0, 0, 0)
@@ -147,25 +151,25 @@ class Ui_MainWindow(object):
 
         self.save_graph_options.addWidget(self.line, 2, 0, 1, 1)
 
-        self.pushButton_2 = QPushButton(self.gridLayoutWidget_2)
-        self.pushButton_2.setObjectName(u"pushButton_2")
+        self.save_all_images = QPushButton(self.gridLayoutWidget_2)
+        self.save_all_images.setObjectName(u"save_all_images")
 
-        self.save_graph_options.addWidget(self.pushButton_2, 1, 1, 1, 1)
+        self.save_graph_options.addWidget(self.save_all_images, 1, 1, 1, 1)
 
-        self.label_2 = QLabel(self.gridLayoutWidget_2)
-        self.label_2.setObjectName(u"label_2")
+        self.out_ppt_location_label = QLabel(self.gridLayoutWidget_2)
+        self.out_ppt_location_label.setObjectName(u"out_ppt_location_label")
 
-        self.save_graph_options.addWidget(self.label_2, 3, 1, 1, 1)
+        self.save_graph_options.addWidget(self.out_ppt_location_label, 3, 1, 1, 1)
 
         self.out_ppt_location_button = QPushButton(self.gridLayoutWidget_2)
         self.out_ppt_location_button.setObjectName(u"out_ppt_location_button")
 
         self.save_graph_options.addWidget(self.out_ppt_location_button, 3, 0, 1, 1)
 
-        self.pushButton = QPushButton(self.gridLayoutWidget_2)
-        self.pushButton.setObjectName(u"pushButton")
+        self.save_one_image = QPushButton(self.gridLayoutWidget_2)
+        self.save_one_image.setObjectName(u"save_one_image")
 
-        self.save_graph_options.addWidget(self.pushButton, 1, 0, 1, 1)
+        self.save_graph_options.addWidget(self.save_one_image, 1, 0, 1, 1)
 
         self.line_2 = QFrame(self.gridLayoutWidget_2)
         self.line_2.setObjectName(u"line_2")
@@ -179,15 +183,15 @@ class Ui_MainWindow(object):
 
         self.save_graph_options.addWidget(self.out_png_location_button, 0, 0, 1, 1)
 
-        self.label = QLabel(self.gridLayoutWidget_2)
-        self.label.setObjectName(u"label")
+        self.out_png_location_label = QLabel(self.gridLayoutWidget_2)
+        self.out_png_location_label.setObjectName(u"out_png_location_label")
 
-        self.save_graph_options.addWidget(self.label, 0, 1, 1, 1)
+        self.save_graph_options.addWidget(self.out_png_location_label, 0, 1, 1, 1)
 
-        self.pushButton_3 = QPushButton(self.gridLayoutWidget_2)
-        self.pushButton_3.setObjectName(u"pushButton_3")
+        self.save_ppt = QPushButton(self.gridLayoutWidget_2)
+        self.save_ppt.setObjectName(u"save_ppt")
 
-        self.save_graph_options.addWidget(self.pushButton_3, 4, 0, 1, 1)
+        self.save_graph_options.addWidget(self.save_ppt, 4, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -222,26 +226,27 @@ class Ui_MainWindow(object):
         self.num_ind_vars_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"1", None))
         self.num_ind_vars_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"2", None))
 
-        self.num_groups_combo.setItemText(0, QCoreApplication.translate("MainWindow", u"Choose Value . . .", None))
-        self.num_groups_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"1", None))
-        self.num_groups_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"2", None))
-
-        self.grp_names.setText(QCoreApplication.translate("MainWindow", u"Group names:", None))
         self.analysis_type_combo.setItemText(0, QCoreApplication.translate("MainWindow", u"Choose Test Type . . .", None))
         self.analysis_type_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"Independent T-test", None))
         self.analysis_type_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"Dependent T-test", None))
         self.analysis_type_combo.setItemText(3, QCoreApplication.translate("MainWindow", u"Anova", None))
 
+        self.num_groups_combo.setItemText(0, QCoreApplication.translate("MainWindow", u"Choose Value . . .", None))
+        self.num_groups_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"1", None))
+        self.num_groups_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"2", None))
+
         self.analysis_type.setText(QCoreApplication.translate("MainWindow", u"Stat analysis type:", None))
-        self.display_pngs.setText(QCoreApplication.translate("MainWindow", u"Graph", None))
+        self.grp_names.setText(QCoreApplication.translate("MainWindow", u"Group names:", None))
+        self.display_pngs.setText("")
         self.images.setTabText(self.images.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Image 1", None))
+        self.display_pngs_2.setText("")
         self.images.setTabText(self.images.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Image 2", None))
-        self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"Save all images", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"No path chosen", None))
+        self.save_all_images.setText(QCoreApplication.translate("MainWindow", u"Save all images", None))
+        self.out_ppt_location_label.setText(QCoreApplication.translate("MainWindow", u"No path chosen", None))
         self.out_ppt_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose ppt save location:", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Save this image only", None))
+        self.save_one_image.setText(QCoreApplication.translate("MainWindow", u"Save this image only", None))
         self.out_png_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose image save location:", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"No path chosen", None))
-        self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Save all images to power point", None))
+        self.out_png_location_label.setText(QCoreApplication.translate("MainWindow", u"No path chosen", None))
+        self.save_ppt.setText(QCoreApplication.translate("MainWindow", u"Save all images to power point", None))
     # retranslateUi
 
