@@ -75,3 +75,5 @@ CMakeLists.txt.user*
 # Python Virtual Environment
 # Added by Alan Mo 1-2-24
 venv/
+# Data
+data/
