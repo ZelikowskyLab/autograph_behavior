@@ -36,7 +36,7 @@
         "data/observerData/Partner stress behavior scoring - Group 4-4 (male) - Event Logs.xlsx",
         "data/observerData/Partner stress behavior scoring - Group 4-4 - Event Logs.xlsx",
         "data/simbaData.csv",
-        "data_reader.py",
+        "cleaner.py",
         "grapher.py",
         "mainwindow.py",
         "mainwindow.ui",
