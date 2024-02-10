@@ -1,10 +1,20 @@
 # This Python file uses the following encoding: utf-8
-import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 import os
 from datetime import datetime
+import sys
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from cleaner import Cleaner
 
+''' TODO:
+    make mice ID column entry box
+
+    get list of behaviors that are common amoung all mice
+    remove all other columns
+    make a column for each of these behaviors
+    columns can either be one column with many groups/behaviors/durations
+    or many columns with the times under each column
+    time columns only needed if there is only one behavior column
+'''
 # Important:
 # You need to run the following command to generate the ui_mainwindow.py file
 #     pyside6-uic mainwindow.ui -o ui_mainwindow.py, or
@@ -19,11 +29,9 @@ class MainWindow(QMainWindow):
         self.cleaner = Cleaner(self)
 
         # These variables will be set by the user input
-        # columns can either be one column with many groups/behaviors/durations
-        # or many columns with the times under each column
-        # time columns only needed if there is only one behavior column
         self.in_path = ""
         self.out_path = ""
+        self.mice_cols = []
         self.grp_cols = []
         self.beh_cols = []
         self.measured_cols = []
@@ -51,14 +59,14 @@ class MainWindow(QMainWindow):
                 if self.check_file_format(file_path):
                     self.append_prog_messages("File path saved: " + file_path)
                     self.set_in_path(file_path)
-                    self.ui.in_location_label.setText(file_path)
+                    self.ui.in_location_text.setText(file_path)
                 else:
                     self.append_prog_messages("File type not supported: " + file_path)
         else:
             folder_path = file_dialog.getExistingDirectory(self, "Select Output Folder")
             if folder_path:
                 self.set_out_path(folder_path)
-                self.ui.out_png_location_label.setText(folder_path)
+                self.ui.out_png_location_text.setText(folder_path)
                 self.append_prog_messages("Output path saved: " + folder_path)
 
     # Checks for valid file format
@@ -69,16 +77,19 @@ class MainWindow(QMainWindow):
     # Assigns column names based on user input
     def assign_column_names(self):
         try:
+            mice_cols_input     = self.ui.mice_cols_input.toPlainText()
             grp_cols_input      = self.ui.grp_cols_input.toPlainText()
             beh_cols_input      = self.ui.beh_cols_input.toPlainText()
             measured_cols_input = self.ui.measured_cols_input.toPlainText()
 
             # Split the comma-separated values
+            mice_cols     = [col.strip() for col in      mice_cols_input.split(",") if col.strip()]
             grp_cols      = [col.strip() for col in      grp_cols_input.split(",") if col.strip()]
             beh_cols      = [col.strip() for col in      beh_cols_input.split(",")  if col.strip()]
             measured_cols = [col.strip() for col in measured_cols_input.split(",") if col.strip()]
 
             # Assign columns to variables
+            self.set_mice_cols(mice_cols)
             self.set_grp_cols(grp_cols)
             self.set_beh_cols(beh_cols)
             self.set_measured_cols(measured_cols)
@@ -94,15 +105,18 @@ class MainWindow(QMainWindow):
 
     # Runs the data cleaner
     def run(self):
-        # try:
+        try:
             in_path = self.get_in_path()
             if in_path:
-                self.append_prog_messages("Running...")
-                self.cleaner.main(in_path, self.grp_cols, self.beh_cols, self.measured_cols)
+                if self.mice_cols and self.grp_cols and self.beh_cols and self.measured_cols:
+                    self.append_prog_messages("Running...")
+                    self.cleaner.main(in_path, self.mice_cols, self.grp_cols, self.beh_cols, self.measured_cols)
+                else:
+                    self.append_prog_messages("Please enter and confirm all column info.")
             else:
                 self.append_prog_messages("No file path selected.")
-        # except Exception as e:
-        #     self.append_prog_messages(f"Error occurred while running: {e}")
+        except Exception as e:
+            self.append_prog_messages(f"Error occurred while running: {e}")
 
     # Getters
     def get_in_path(self):
@@ -110,6 +124,9 @@ class MainWindow(QMainWindow):
 
     def get_out_path(self):
         return self.out_path
+
+    def get_mice_cols(self):
+        return self.mice_cols
 
     def get_grp_cols(self):
         return self.grp_cols
@@ -126,6 +143,9 @@ class MainWindow(QMainWindow):
 
     def set_out_path(self, path):
         self.out_path = path
+
+    def set_mice_cols(self, columns):
+        self.mice_cols = columns
 
     def set_grp_cols(self, columns):
         self.grp_cols = columns
