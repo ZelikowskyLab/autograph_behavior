@@ -24,21 +24,21 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(847, 717)
+        MainWindow.resize(840, 726)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayoutWidget = QWidget(self.centralwidget)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(10, 10, 351, 461))
+        self.gridLayoutWidget.setGeometry(QRect(10, 10, 351, 431))
         self.input_params = QGridLayout(self.gridLayoutWidget)
         self.input_params.setObjectName(u"input_params")
         self.input_params.setSizeConstraint(QLayout.SetDefaultConstraint)
         self.input_params.setHorizontalSpacing(5)
         self.input_params.setContentsMargins(0, 0, 0, 0)
-        self.beh_cols_input = QPlainTextEdit(self.gridLayoutWidget)
-        self.beh_cols_input.setObjectName(u"beh_cols_input")
+        self.prog_msgs_label = QLabel(self.gridLayoutWidget)
+        self.prog_msgs_label.setObjectName(u"prog_msgs_label")
 
-        self.input_params.addWidget(self.beh_cols_input, 7, 0, 1, 1)
+        self.input_params.addWidget(self.prog_msgs_label, 18, 0, 1, 1)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
@@ -58,45 +58,55 @@ class Ui_MainWindow(object):
 
         self.input_params.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
 
+        self.grp_cols_label = QLabel(self.gridLayoutWidget)
+        self.grp_cols_label.setObjectName(u"grp_cols_label")
+
+        self.input_params.addWidget(self.grp_cols_label, 3, 0, 1, 1)
+
+        self.grp_cols_input = QPlainTextEdit(self.gridLayoutWidget)
+        self.grp_cols_input.setObjectName(u"grp_cols_input")
+
+        self.input_params.addWidget(self.grp_cols_input, 4, 0, 1, 1)
+
         self.beh_cols_label = QLabel(self.gridLayoutWidget)
         self.beh_cols_label.setObjectName(u"beh_cols_label")
 
-        self.input_params.addWidget(self.beh_cols_label, 6, 0, 1, 1)
+        self.input_params.addWidget(self.beh_cols_label, 7, 0, 1, 1)
+
+        self.in_location_text = QTextBrowser(self.gridLayoutWidget)
+        self.in_location_text.setObjectName(u"in_location_text")
+
+        self.input_params.addWidget(self.in_location_text, 16, 0, 1, 1)
+
+        self.confirm_col_info_button = QPushButton(self.gridLayoutWidget)
+        self.confirm_col_info_button.setObjectName(u"confirm_col_info_button")
+
+        self.input_params.addWidget(self.confirm_col_info_button, 14, 0, 1, 1)
+
+        self.beh_cols_input = QPlainTextEdit(self.gridLayoutWidget)
+        self.beh_cols_input.setObjectName(u"beh_cols_input")
+
+        self.input_params.addWidget(self.beh_cols_input, 8, 0, 1, 1)
 
         self.measured_cols_input = QPlainTextEdit(self.gridLayoutWidget)
         self.measured_cols_input.setObjectName(u"measured_cols_input")
 
-        self.input_params.addWidget(self.measured_cols_input, 11, 0, 1, 1)
-
-        self.mice_cols_label = QLabel(self.gridLayoutWidget)
-        self.mice_cols_label.setObjectName(u"mice_cols_label")
-
-        self.input_params.addWidget(self.mice_cols_label, 2, 0, 1, 1)
-
-        self.mice_cols_input = QPlainTextEdit(self.gridLayoutWidget)
-        self.mice_cols_input.setObjectName(u"mice_cols_input")
-
-        self.input_params.addWidget(self.mice_cols_input, 3, 0, 1, 1)
+        self.input_params.addWidget(self.measured_cols_input, 12, 0, 1, 1)
 
         self.in_location_button = QPushButton(self.gridLayoutWidget)
         self.in_location_button.setObjectName(u"in_location_button")
 
-        self.input_params.addWidget(self.in_location_button, 14, 0, 1, 1)
-
-        self.run_button = QPushButton(self.gridLayoutWidget)
-        self.run_button.setObjectName(u"run_button")
-
-        self.input_params.addWidget(self.run_button, 16, 0, 1, 1)
-
-        self.grp_cols_label = QLabel(self.gridLayoutWidget)
-        self.grp_cols_label.setObjectName(u"grp_cols_label")
-
-        self.input_params.addWidget(self.grp_cols_label, 4, 0, 1, 1)
+        self.input_params.addWidget(self.in_location_button, 15, 0, 1, 1)
 
         self.measured_cols_label = QLabel(self.gridLayoutWidget)
         self.measured_cols_label.setObjectName(u"measured_cols_label")
 
-        self.input_params.addWidget(self.measured_cols_label, 9, 0, 1, 1)
+        self.input_params.addWidget(self.measured_cols_label, 10, 0, 1, 1)
+
+        self.run_button = QPushButton(self.gridLayoutWidget)
+        self.run_button.setObjectName(u"run_button")
+
+        self.input_params.addWidget(self.run_button, 17, 0, 1, 1)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -118,20 +128,15 @@ class Ui_MainWindow(object):
 
         self.input_params.addLayout(self.horizontalLayout, 1, 0, 1, 1)
 
-        self.grp_cols_input = QPlainTextEdit(self.gridLayoutWidget)
-        self.grp_cols_input.setObjectName(u"grp_cols_input")
+        self.mice_cols_label = QLabel(self.gridLayoutWidget)
+        self.mice_cols_label.setObjectName(u"mice_cols_label")
 
-        self.input_params.addWidget(self.grp_cols_input, 5, 0, 1, 1)
+        self.input_params.addWidget(self.mice_cols_label, 5, 0, 1, 1)
 
-        self.confirm_col_info_button = QPushButton(self.gridLayoutWidget)
-        self.confirm_col_info_button.setObjectName(u"confirm_col_info_button")
+        self.mice_cols_input = QPlainTextEdit(self.gridLayoutWidget)
+        self.mice_cols_input.setObjectName(u"mice_cols_input")
 
-        self.input_params.addWidget(self.confirm_col_info_button, 13, 0, 1, 1)
-
-        self.in_location_text = QTextBrowser(self.gridLayoutWidget)
-        self.in_location_text.setObjectName(u"in_location_text")
-
-        self.input_params.addWidget(self.in_location_text, 15, 0, 1, 1)
+        self.input_params.addWidget(self.mice_cols_input, 6, 0, 1, 1)
 
         self.images = QTabWidget(self.centralwidget)
         self.images.setObjectName(u"images")
@@ -155,10 +160,15 @@ class Ui_MainWindow(object):
         self.images.addTab(self.tab_2, "")
         self.gridLayoutWidget_2 = QWidget(self.centralwidget)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(420, 520, 391, 91))
+        self.gridLayoutWidget_2.setGeometry(QRect(420, 520, 399, 121))
         self.save_graph_options = QGridLayout(self.gridLayoutWidget_2)
         self.save_graph_options.setObjectName(u"save_graph_options")
         self.save_graph_options.setContentsMargins(0, 0, 0, 0)
+        self.out_png_location_text = QTextBrowser(self.gridLayoutWidget_2)
+        self.out_png_location_text.setObjectName(u"out_png_location_text")
+
+        self.save_graph_options.addWidget(self.out_png_location_text, 0, 1, 1, 1)
+
         self.save_one_image = QPushButton(self.gridLayoutWidget_2)
         self.save_one_image.setObjectName(u"save_one_image")
 
@@ -184,21 +194,18 @@ class Ui_MainWindow(object):
 
         self.save_graph_options.addWidget(self.save_one_ppt, 2, 0, 1, 1)
 
-        self.out_png_location_text = QTextBrowser(self.gridLayoutWidget_2)
-        self.out_png_location_text.setObjectName(u"out_png_location_text")
+        self.save_all_dfs = QPushButton(self.gridLayoutWidget_2)
+        self.save_all_dfs.setObjectName(u"save_all_dfs")
 
-        self.save_graph_options.addWidget(self.out_png_location_text, 0, 1, 1, 1)
+        self.save_graph_options.addWidget(self.save_all_dfs, 3, 1, 1, 1)
 
         self.prog_msgs_text = QTextBrowser(self.centralwidget)
         self.prog_msgs_text.setObjectName(u"prog_msgs_text")
-        self.prog_msgs_text.setGeometry(QRect(10, 500, 349, 181))
-        self.prog_msgs_label = QLabel(self.centralwidget)
-        self.prog_msgs_label.setObjectName(u"prog_msgs_label")
-        self.prog_msgs_label.setGeometry(QRect(10, 470, 349, 31))
+        self.prog_msgs_text.setGeometry(QRect(10, 450, 349, 211))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 847, 21))
+        self.menubar.setGeometry(QRect(0, 0, 840, 21))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -214,25 +221,14 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.prog_msgs_label.setText(QCoreApplication.translate("MainWindow", u"Program Messages:", None))
         self.analysis_type_2.setText(QCoreApplication.translate("MainWindow", u"Program that input data is from:", None))
         self.analysis_type_combo_2.setItemText(0, QCoreApplication.translate("MainWindow", u"Choose program . . .", None))
         self.analysis_type_combo_2.setItemText(1, QCoreApplication.translate("MainWindow", u"Observer", None))
         self.analysis_type_combo_2.setItemText(2, QCoreApplication.translate("MainWindow", u"Ethovision", None))
 
-        self.beh_cols_label.setText(QCoreApplication.translate("MainWindow", u"Behavior column(s)", None))
-        self.mice_cols_label.setText(QCoreApplication.translate("MainWindow", u"MiceID column(s)", None))
-        self.in_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose input file location:", None))
-        self.run_button.setText(QCoreApplication.translate("MainWindow", u"Run ->", None))
         self.grp_cols_label.setText(QCoreApplication.translate("MainWindow", u"Group column(s)", None))
-        self.measured_cols_label.setText(QCoreApplication.translate("MainWindow", u"Measured column(s)", None))
-        self.analysis_type.setText(QCoreApplication.translate("MainWindow", u"Statistical analysis type:", None))
-        self.analysis_type_combo.setItemText(0, QCoreApplication.translate("MainWindow", u"Choose Test Type . . .", None))
-        self.analysis_type_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"Independent T-test", None))
-        self.analysis_type_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"Dependent T-test", None))
-        self.analysis_type_combo.setItemText(3, QCoreApplication.translate("MainWindow", u"One Sample T-test", None))
-        self.analysis_type_combo.setItemText(4, QCoreApplication.translate("MainWindow", u"Anova", None))
-
-        self.confirm_col_info_button.setText(QCoreApplication.translate("MainWindow", u"Confirm all column info", None))
+        self.beh_cols_label.setText(QCoreApplication.translate("MainWindow", u"Behavior column(s)", None))
         self.in_location_text.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -241,15 +237,22 @@ class Ui_MainWindow(object):
 "li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">No path chosen</p></body></html>", None))
+        self.confirm_col_info_button.setText(QCoreApplication.translate("MainWindow", u"Confirm all column info", None))
+        self.in_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose input file location:", None))
+        self.measured_cols_label.setText(QCoreApplication.translate("MainWindow", u"Measured column(s)", None))
+        self.run_button.setText(QCoreApplication.translate("MainWindow", u"Run ->", None))
+        self.analysis_type.setText(QCoreApplication.translate("MainWindow", u"Statistical analysis type:", None))
+        self.analysis_type_combo.setItemText(0, QCoreApplication.translate("MainWindow", u"Choose Test Type . . .", None))
+        self.analysis_type_combo.setItemText(1, QCoreApplication.translate("MainWindow", u"Independent T-test", None))
+        self.analysis_type_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"Dependent T-test", None))
+        self.analysis_type_combo.setItemText(3, QCoreApplication.translate("MainWindow", u"One Sample T-test", None))
+        self.analysis_type_combo.setItemText(4, QCoreApplication.translate("MainWindow", u"Anova", None))
+
+        self.mice_cols_label.setText(QCoreApplication.translate("MainWindow", u"MiceID column(s)", None))
         self.display_pngs.setText("")
         self.images.setTabText(self.images.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Image 1", None))
         self.display_pngs_2.setText("")
         self.images.setTabText(self.images.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Image 2", None))
-        self.save_one_image.setText(QCoreApplication.translate("MainWindow", u"Save this image only", None))
-        self.save_all_ppt.setText(QCoreApplication.translate("MainWindow", u"Save all images to power point", None))
-        self.out_png_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose output save location:", None))
-        self.save_all_images.setText(QCoreApplication.translate("MainWindow", u"Save all images", None))
-        self.save_one_ppt.setText(QCoreApplication.translate("MainWindow", u"Save this image only to power point", None))
         self.out_png_location_text.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -258,6 +261,11 @@ class Ui_MainWindow(object):
 "li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">No path chosen</p></body></html>", None))
-        self.prog_msgs_label.setText(QCoreApplication.translate("MainWindow", u"Program Messages:", None))
+        self.save_one_image.setText(QCoreApplication.translate("MainWindow", u"Save this image only", None))
+        self.save_all_ppt.setText(QCoreApplication.translate("MainWindow", u"Save all images to power point", None))
+        self.out_png_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose output save location:", None))
+        self.save_all_images.setText(QCoreApplication.translate("MainWindow", u"Save all images", None))
+        self.save_one_ppt.setText(QCoreApplication.translate("MainWindow", u"Save this image only to power point", None))
+        self.save_all_dfs.setText(QCoreApplication.translate("MainWindow", u"Save all cleaned dataframes to exel", None))
     # retranslateUi
 

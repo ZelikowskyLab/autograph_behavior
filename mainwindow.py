@@ -1,20 +1,10 @@
-# This Python file uses the following encoding: utf-8
 import os
-from datetime import datetime
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from datetime import datetime
+import pandas as pd
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from cleaner import Cleaner
 
-''' TODO:
-    make mice ID column entry box
-
-    get list of behaviors that are common amoung all mice
-    remove all other columns
-    make a column for each of these behaviors
-    columns can either be one column with many groups/behaviors/durations
-    or many columns with the times under each column
-    time columns only needed if there is only one behavior column
-'''
 # Important:
 # You need to run the following command to generate the ui_mainwindow.py file
 #     pyside6-uic mainwindow.ui -o ui_mainwindow.py, or
@@ -27,6 +17,10 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.cleaner = Cleaner(self)
+
+        # Used to save the cleaned dataframes
+        self.cleaned_dfs = None
+        self.measured_col_name = None
 
         # These variables will be set by the user input
         self.in_path = ""
@@ -42,6 +36,7 @@ class MainWindow(QMainWindow):
         self.ui.out_png_location_button.clicked.connect(self.open_file_dialog)
         self.ui.run_button.clicked.connect(self.run)
         self.ui.confirm_col_info_button.clicked.connect(self.assign_column_names)
+        self.ui.save_all_dfs.clicked.connect(self.save_all_dfs)
 
     # Depending on which button is pressed, save file/folder location to variable
     def open_file_dialog(self):
@@ -57,17 +52,17 @@ class MainWindow(QMainWindow):
             file_path, _ = file_dialog.getOpenFileName(self, "Select Input File", "", "All Files (*);;CSV Files (*.csv)")
             if file_path:
                 if self.check_file_format(file_path):
-                    self.append_prog_messages("File path saved: " + file_path)
                     self.set_in_path(file_path)
                     self.ui.in_location_text.setText(file_path)
+                    self.append_prog_messages("Input file selected.")
                 else:
-                    self.append_prog_messages("File type not supported: " + file_path)
+                    self.append_prog_messages("Error: Unsupported file format.")
         else:
             folder_path = file_dialog.getExistingDirectory(self, "Select Output Folder")
             if folder_path:
                 self.set_out_path(folder_path)
                 self.ui.out_png_location_text.setText(folder_path)
-                self.append_prog_messages("Output path saved: " + folder_path)
+                self.append_prog_messages("Output folder selected.")
 
     # Checks for valid file format
     def check_file_format(self, file_path):
@@ -94,9 +89,9 @@ class MainWindow(QMainWindow):
             self.set_beh_cols(beh_cols)
             self.set_measured_cols(measured_cols)
 
-            self.append_prog_messages("Column numbers assigned successfully.")
+            self.append_prog_messages("Column information confirmed.")
         except Exception as e:
-            self.append_prog_messages(f"Error assigning column names: {e}")
+            self.append_prog_messages(f"Error: {e}")
 
     # Appends to the program messages text box
     def append_prog_messages(self, message):
@@ -112,11 +107,52 @@ class MainWindow(QMainWindow):
                     self.append_prog_messages("Running...")
                     self.cleaner.main(in_path, self.mice_cols, self.grp_cols, self.beh_cols, self.measured_cols)
                 else:
-                    self.append_prog_messages("Please enter and confirm all column info.")
+                    self.append_prog_messages("Error: Please enter and confirm all column info.")
             else:
-                self.append_prog_messages("No file path selected.")
+                self.append_prog_messages("Error: No input file selected.")
         except Exception as e:
-            self.append_prog_messages(f"Error occurred while running: {e}")
+            self.append_prog_messages(f"Error: {e}")
+
+    # Save cleaned DataFrames to specified directory
+    def save_all_dfs(self):
+        try:
+            if self.cleaned_dfs:
+                if self.out_path:
+                    output_filename = "_".join(datetime.now().strftime("%m_%d_%Y %H_%M_%S").split()) + "_cleaned_output.xlsx"
+                    output_path = os.path.join(self.out_path, output_filename)
+                    if os.path.exists(output_path):
+                        if not self.overwrite_popup(output_path):
+                            return  # Save operation canceled by user
+                    with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
+                        for idx, (reformatted_df, measured_col_name) in enumerate(zip(self.cleaned_dfs, self.measured_col_name)):
+                            # Truncate sheet name if greater than or equal to 31 characters
+                            if len(measured_col_name) >= 31:
+                                measured_col_name = measured_col_name[:31]
+                                self.append_prog_messages(f"Sheet name '{measured_col_name}' truncated.")
+                            reformatted_df.to_excel(writer, sheet_name=measured_col_name, index=False)
+                    self.append_prog_messages("All reformatted DataFrames saved.")
+                else:
+                    self.append_prog_messages("Error: Please select an output folder.")
+            else:
+                self.append_prog_messages("Error: No reformatted DataFrames to save.")
+        except Exception as e:
+            self.append_prog_messages(f"Error: {e}")
+
+    # User confirm overwrite file if already exists
+    def overwrite_popup(self, output_path):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Question)
+        msg_box.setText("The file already exists.")
+        msg_box.setInformativeText("Do you want to replace it?")
+        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
+        msg_box.setDefaultButton(QMessageBox.Cancel)
+
+        result = msg_box.exec()
+        if result == QMessageBox.Yes:
+            return True  # User wants to overwrite the file
+        else:
+            self.append_prog_messages("Save operation canceled.")
+            return False  # User canceled the save operation
 
     # Getters
     def get_in_path(self):
