@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>840</width>
-    <height>726</height>
+    <width>932</width>
+    <height>784</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>351</width>
-      <height>431</height>
+      <width>387</width>
+      <height>501</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="input_params">
@@ -127,7 +127,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <item row="10" column="0">
       <widget class="QLabel" name="measured_cols_label">
        <property name="text">
-        <string>Measured column(s)</string>
+        <string>Measured column(s) (optional)</string>
        </property>
       </widget>
      </item>
@@ -162,11 +162,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
          <item>
           <property name="text">
            <string>Dependent T-test</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>One Sample T-test</string>
           </property>
          </item>
          <item>
@@ -259,8 +254,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <rect>
       <x>420</x>
       <y>520</y>
-      <width>399</width>
-      <height>121</height>
+      <width>494</width>
+      <height>189</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="save_graph_options">
@@ -326,9 +321,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>450</y>
-      <width>349</width>
-      <height>211</height>
+      <y>510</y>
+      <width>381</width>
+      <height>201</height>
      </rect>
     </property>
    </widget>
@@ -338,8 +333,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>840</width>
-     <height>21</height>
+     <width>932</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>

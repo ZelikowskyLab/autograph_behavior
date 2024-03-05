@@ -20,23 +20,31 @@ class MainWindow(QMainWindow):
 
         # Used to save the cleaned dataframes
         self.cleaned_dfs = None
-        self.measured_col_name = None
+        self.measured_col_names = None
 
         # These variables will be set by the user input
+        self.test_type = ""
         self.in_path = ""
         self.out_path = ""
         self.mice_cols = []
         self.grp_cols = []
         self.beh_cols = []
         self.measured_cols = []
+
         self.valid_formats = ['.csv', '.xlsx']
 
-        # Connect buttons to methods
+        # Connect ui elements to methods
+        self.ui.analysis_type_combo.currentTextChanged.connect(self.update_test_type)
         self.ui.in_location_button.clicked.connect(self.open_file_dialog)
         self.ui.out_png_location_button.clicked.connect(self.open_file_dialog)
         self.ui.run_button.clicked.connect(self.run)
         self.ui.confirm_col_info_button.clicked.connect(self.assign_column_names)
         self.ui.save_all_dfs.clicked.connect(self.save_all_dfs)
+
+    # Update the statistical analysis type
+    def update_test_type(self, text):
+        self.set_test_type(text)
+        self.append_prog_messages(f"Test type updated: {text}")
 
     # Depending on which button is pressed, save file/folder location to variable
     def open_file_dialog(self):
@@ -103,11 +111,14 @@ class MainWindow(QMainWindow):
         try:
             in_path = self.get_in_path()
             if in_path:
-                if self.mice_cols and self.grp_cols and self.beh_cols and self.measured_cols:
-                    self.append_prog_messages("Running...")
-                    self.cleaner.main(in_path, self.mice_cols, self.grp_cols, self.beh_cols, self.measured_cols)
+                if self.test_type and self.test_type != "Choose Test Type":
+                    if self.mice_cols and self.grp_cols and self.beh_cols:
+                        self.append_prog_messages("Running...")
+                        self.cleaner.main(in_path, self.mice_cols, self.grp_cols, self.beh_cols, self.measured_cols)
+                    else:
+                        self.append_prog_messages("Error: Please enter and confirm all column info.")
                 else:
-                    self.append_prog_messages("Error: Please enter and confirm all column info.")
+                    self.append_prog_messages("Error: Please choose a test type to perform.")
             else:
                 self.append_prog_messages("Error: No input file selected.")
         except Exception as e:
@@ -124,7 +135,7 @@ class MainWindow(QMainWindow):
                         if not self.overwrite_popup(output_path):
                             return  # Save operation canceled by user
                     with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
-                        for idx, (reformatted_df, measured_col_name) in enumerate(zip(self.cleaned_dfs, self.measured_col_name)):
+                        for idx, (reformatted_df, measured_col_name) in enumerate(zip(self.cleaned_dfs, self.measured_col_names)):
                             # Truncate sheet name if greater than or equal to 31 characters
                             if len(measured_col_name) >= 31:
                                 measured_col_name = measured_col_name[:31]
@@ -155,6 +166,15 @@ class MainWindow(QMainWindow):
             return False  # User canceled the save operation
 
     # Getters
+    def get_cleaned_dfs(self):
+        return self.cleaned_dfs
+
+    def get_measured_col_names(self):
+        return self.measured_col_names
+
+    def get_test_type(self):
+        return self.test_type
+
     def get_in_path(self):
         return self.in_path
 
@@ -174,6 +194,15 @@ class MainWindow(QMainWindow):
         return self.measured_cols
 
     # Setters
+    def set_cleaned_dfs(self, cleaned_dfs):
+        self.cleaned_dfs = cleaned_dfs
+
+    def set_measured_col_names(self, measured_col_names):
+        self.measured_col_names = measured_col_names
+
+    def set_test_type(self, test_type):
+        self.test_type = test_type
+
     def set_in_path(self, path):
         self.in_path = path
 

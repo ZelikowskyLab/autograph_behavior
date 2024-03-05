@@ -1,7 +1,9 @@
 import os
 import pandas as pd
 import re
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtCore
+from tester import Tester
+import datetime
 
 class Cleaner(QtCore.QObject):
     def __init__(self, main_window):
@@ -20,9 +22,12 @@ class Cleaner(QtCore.QObject):
             self.main_window.append_prog_messages("Columns cleaned successfully.")
 
             # Reformat
-            self.main_window.cleaned_dfs, self.main_window.measured_col_name = self.reformat(df, cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols)  # Assign reformatted_dfs to MainWindow variable
+            self.main_window.cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names = self.reformat(df, cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols)
+            self.main_window.append_prog_messages("Dataframes reformatted succesfully.")
 
-            # Start statistical test
+            # Get groups data to run tests on
+            self.get_grp_data(self.main_window.get_test_type(), self.main_window.get_cleaned_dfs(), mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names)
+            self.main_window.append_prog_messages("Tests run succesfully.")
 
         except Exception as e:
             self.main_window.append_prog_messages(f"Error occurred while cleaning: {e}")
@@ -57,7 +62,7 @@ class Cleaner(QtCore.QObject):
             cleaned_mice_cols     = self.clean_col_list(df, mice_cols)
             cleaned_grp_cols      = self.clean_col_list(df, grp_cols)
             cleaned_beh_cols      = self.clean_col_list(df, beh_cols)
-            cleaned_measured_cols = self.clean_col_list(df, measured_cols)
+            cleaned_measured_cols = -1 if not measured_cols else self.clean_col_list(df, measured_cols)
             return cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols
 
         except Exception as e:
@@ -128,35 +133,68 @@ class Cleaner(QtCore.QObject):
             mice_col_names = [df.columns[i] for i in cleaned_mice_cols]
             grp_col_names = [df.columns[i] for i in cleaned_grp_cols]
             beh_col_names = [df.columns[i] for i in cleaned_beh_cols]
-            measured_col_names = [df.columns[i] for i in cleaned_measured_cols]
+            if cleaned_measured_cols == -1:
+                measured_col_names = ["Unspecified"]
+            else:
+                measured_col_names = [df.columns[i] for i in cleaned_measured_cols]
 
             # Check if cleaned columns have only one value and are valid
             if len(mice_col_names) == 1 and len(grp_col_names) == 1 and len(beh_col_names) == 1:
-                if (0 <= cleaned_mice_cols[0] < df.shape[1]) and (0 <= cleaned_grp_cols[0] < df.shape[1]) and (
-                        0 <= cleaned_beh_cols[0] < df.shape[1]):
+                if (0 <= cleaned_mice_cols[0] < df.shape[1]) and (0 <= cleaned_grp_cols[0] < df.shape[1]) and (0 <= cleaned_beh_cols[0] < df.shape[1]):
                     mice_col_name = mice_col_names[0]
                     grp_col_name = grp_col_names[0]
                     beh_col_name = beh_col_names[0]
 
-            # Check if beh_col_names has more than one unique value
-            unique_beh_col_names = df[beh_col_name].unique()
-            if len(unique_beh_col_names) > 1:
-                dfs = []
-                for measured_col_name in measured_col_names:
-                    # Create a new DataFrame with unique_beh_col_names as columns
-                    new_df = pd.DataFrame(columns=[grp_col_name, mice_col_name] + list(unique_beh_col_names))  # Include grp_col_name and mice_col_name at the front
-                    for idx, beh_val in enumerate(df[beh_col_name]):
-                        new_df.loc[idx, grp_col_name] = df[grp_col_name][idx]  # Assign grp_col_name value
-                        new_df.loc[idx, mice_col_name] = df[mice_col_name][idx]  # Assign mice_col_name value
-                        new_df.loc[idx, beh_val] = df[measured_col_name][idx]  # Assign measured values to corresponding behavior columns
+                    unique_beh_col_names = df[beh_col_name].unique()
+                    dfs = []
+                    for measured_col_name in measured_col_names:
+                        # Create a new DataFrame with unique_beh_col_names as columns
+                        new_df = pd.DataFrame(columns=[grp_col_name, mice_col_name] + list(unique_beh_col_names))  # Include grp_col_name and mice_col_name at the front
+                        for idx, beh_val in enumerate(df[beh_col_name]):
+                            new_df.loc[idx, grp_col_name] = df[grp_col_name][idx]  # Assign grp_col_name value
+                            new_df.loc[idx, mice_col_name] = df[mice_col_name][idx]  # Assign mice_col_name value
+                            new_df.loc[idx, beh_val] = df[measured_col_name][idx]  # Assign measured values to corresponding behavior columns
 
-                    # Collapse the DataFrame to have only one row for each unique value in mice_col_name
-                    new_df = new_df.groupby([grp_col_name, mice_col_name]).first().reset_index()
-                    dfs.append(new_df)
+                        # Collapse the DataFrame to have only one row for each unique value in mice_col_name
+                        new_df = new_df.groupby([grp_col_name, mice_col_name]).first().reset_index()
 
-                # Return array of DataFrames and measured_col_names
-                return dfs, measured_col_names
+                        # Fill missing values with 0
+                        new_df.fillna(0, inplace=True)
+                        dfs.append(new_df)
+
+                    # Return array of DataFrames and measured_col_names
+                    return dfs, mice_col_names, grp_col_names, unique_beh_col_names, measured_col_names
+
+            # This means that one of the cleaned columns has more than one value (more than one behavior column)
+            else:
+                dfs = [df]
+                return dfs, mice_col_names, grp_col_names, beh_col_names, measured_col_names
 
         except Exception as e:
             self.main_window.append_prog_messages(f"Error occurred during reformatting: {e}")
             return None, None
+
+    # Method to get groups and perform statistical tests based on the selected test type
+    def get_grp_data(self, test_type, cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, measured_col_names):
+        try:
+            if test_type == "Independent T-test":
+                for i, df in enumerate(cleaned_dfs):
+                    if len(df[grp_col_names[0]].unique()) == 2:
+                        for beh_col_name in unique_beh_col_names:
+                            grp1 = df[df[grp_col_names[0]] == df[grp_col_names[0]].unique()[0]][beh_col_name].tolist()
+                            grp2 = df[df[grp_col_names[0]] == df[grp_col_names[0]].unique()[1]][beh_col_name].tolist()
+
+                            # Convert value to microseconds if it is a datetime.time datatype and is not None.
+                            grp1 = [(val.hour * 3600 + val.minute * 60 + val.second) * 10**6 + val.microsecond if isinstance(val, datetime.time) and val is not None else val for val in grp1]
+                            grp2 = [(val.hour * 3600 + val.minute * 60 + val.second) * 10**6 + val.microsecond if isinstance(val, datetime.time) and val is not None else val for val in grp2]
+
+                            # Call ind_ttest from the Tester class
+                            tester = Tester(self.main_window)
+                            tester.ttest(grp1, grp2, test_type, measured_col_names[i], beh_col_name)
+                    else:
+                        self.main_window.append_prog_messages("Error: Wrong number of groups for Independent T-test.")
+            else:
+                self.main_window.append_prog_messages("Error: Wrong test type.")
+
+        except Exception as e:
+            self.main_window.append_prog_messages(f"Error occurred during statistical test: {e}")
