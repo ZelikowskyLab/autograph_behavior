@@ -15,21 +15,21 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QLayout, QMainWindow,
-    QMenuBar, QPlainTextEdit, QPushButton, QSizePolicy,
-    QStatusBar, QTabWidget, QTextBrowser, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QHBoxLayout,
+    QLabel, QLayout, QMainWindow, QMenuBar,
+    QPlainTextEdit, QPushButton, QSizePolicy, QStatusBar,
+    QTabWidget, QTextBrowser, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(932, 784)
+        MainWindow.resize(1113, 1014)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayoutWidget = QWidget(self.centralwidget)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(10, 10, 387, 501))
+        self.gridLayoutWidget.setGeometry(QRect(10, 10, 387, 744))
         self.input_params = QGridLayout(self.gridLayoutWidget)
         self.input_params.setObjectName(u"input_params")
         self.input_params.setSizeConstraint(QLayout.SetDefaultConstraint)
@@ -137,29 +137,9 @@ class Ui_MainWindow(object):
 
         self.input_params.addWidget(self.mice_cols_input, 6, 0, 1, 1)
 
-        self.images = QTabWidget(self.centralwidget)
-        self.images.setObjectName(u"images")
-        self.images.setGeometry(QRect(410, 10, 421, 501))
-        self.images.setTabPosition(QTabWidget.North)
-        self.images.setTabShape(QTabWidget.Rounded)
-        self.images.setElideMode(Qt.ElideNone)
-        self.tab = QWidget()
-        self.tab.setObjectName(u"tab")
-        self.display_pngs = QLabel(self.tab)
-        self.display_pngs.setObjectName(u"display_pngs")
-        self.display_pngs.setGeometry(QRect(20, 20, 351, 431))
-        self.display_pngs.setFrameShape(QFrame.Box)
-        self.images.addTab(self.tab, "")
-        self.tab_2 = QWidget()
-        self.tab_2.setObjectName(u"tab_2")
-        self.display_pngs_2 = QLabel(self.tab_2)
-        self.display_pngs_2.setObjectName(u"display_pngs_2")
-        self.display_pngs_2.setGeometry(QRect(20, 30, 371, 411))
-        self.display_pngs_2.setFrameShape(QFrame.Box)
-        self.images.addTab(self.tab_2, "")
         self.gridLayoutWidget_2 = QWidget(self.centralwidget)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(420, 520, 494, 189))
+        self.gridLayoutWidget_2.setGeometry(QRect(420, 740, 494, 189))
         self.save_graph_options = QGridLayout(self.gridLayoutWidget_2)
         self.save_graph_options.setObjectName(u"save_graph_options")
         self.save_graph_options.setContentsMargins(0, 0, 0, 0)
@@ -200,11 +180,27 @@ class Ui_MainWindow(object):
 
         self.prog_msgs_text = QTextBrowser(self.centralwidget)
         self.prog_msgs_text.setObjectName(u"prog_msgs_text")
-        self.prog_msgs_text.setGeometry(QRect(10, 510, 381, 201))
+        self.prog_msgs_text.setGeometry(QRect(10, 760, 381, 201))
+        self.tabWidget = QTabWidget(self.centralwidget)
+        self.tabWidget.setObjectName(u"tabWidget")
+        self.tabWidget.setGeometry(QRect(420, 10, 681, 731))
+        self.tabWidget.setLayoutDirection(Qt.LeftToRight)
+        self.tabWidget.setTabPosition(QTabWidget.North)
+        self.tabWidget.setTabShape(QTabWidget.Rounded)
+        self.tabWidget.setDocumentMode(False)
+        self.tabWidget.setTabsClosable(False)
+        self.tabWidget.setMovable(False)
+        self.tabWidget.setTabBarAutoHide(False)
+        self.tab = QWidget()
+        self.tab.setObjectName(u"tab")
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QWidget()
+        self.tab_2.setObjectName(u"tab_2")
+        self.tabWidget.addTab(self.tab_2, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 932, 25))
+        self.menubar.setGeometry(QRect(0, 0, 1113, 25))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -212,7 +208,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.images.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -247,10 +243,6 @@ class Ui_MainWindow(object):
         self.analysis_type_combo.setItemText(3, QCoreApplication.translate("MainWindow", u"Anova", None))
 
         self.mice_cols_label.setText(QCoreApplication.translate("MainWindow", u"MiceID column(s)", None))
-        self.display_pngs.setText("")
-        self.images.setTabText(self.images.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Image 1", None))
-        self.display_pngs_2.setText("")
-        self.images.setTabText(self.images.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Image 2", None))
         self.out_png_location_text.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -265,5 +257,7 @@ class Ui_MainWindow(object):
         self.save_all_images.setText(QCoreApplication.translate("MainWindow", u"Save all images", None))
         self.save_one_ppt.setText(QCoreApplication.translate("MainWindow", u"Save this image only to power point", None))
         self.save_all_dfs.setText(QCoreApplication.translate("MainWindow", u"Save all cleaned dataframes to exel", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Graphs will appear here after tests tun", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
     # retranslateUi
 

@@ -3,7 +3,9 @@ import pandas as pd
 import re
 from PyQt6 import QtCore
 from tester import Tester
+from grapher import Grapher
 import datetime
+import numpy as np
 
 class Cleaner(QtCore.QObject):
     def __init__(self, main_window):
@@ -24,9 +26,10 @@ class Cleaner(QtCore.QObject):
             # Reformat
             self.main_window.cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names = self.reformat(df, cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols)
             self.main_window.append_prog_messages("Dataframes reformatted succesfully.")
+            self.main_window.set_unique_beh_col_names(unique_beh_col_names)
 
             # Get groups data to run tests on
-            self.get_grp_data(self.main_window.get_test_type(), self.main_window.get_cleaned_dfs(), mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names)
+            self.main_window.add_graphs(self.get_grp_data(self.main_window.get_test_type(), self.main_window.get_cleaned_dfs(), mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names))
             self.main_window.append_prog_messages("Tests run succesfully.")
 
         except Exception as e:
@@ -159,7 +162,8 @@ class Cleaner(QtCore.QObject):
                         new_df = new_df.groupby([grp_col_name, mice_col_name]).first().reset_index()
 
                         # Fill missing values with 0
-                        new_df.fillna(0, inplace=True)
+                        # pd.set_option('future.no_silent_downcasting', True)
+                        # new_df.fillna(0, inplace=True)
                         dfs.append(new_df)
 
                     # Return array of DataFrames and measured_col_names
@@ -177,24 +181,31 @@ class Cleaner(QtCore.QObject):
     # Method to get groups and perform statistical tests based on the selected test type
     def get_grp_data(self, test_type, cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, measured_col_names):
         try:
+            images = []
             if test_type == "Independent T-test":
                 for i, df in enumerate(cleaned_dfs):
-                    if len(df[grp_col_names[0]].unique()) == 2:
+                    unique_grp_col_names = df[grp_col_names[0]].unique()
+                    if len(unique_grp_col_names) == 2:
                         for beh_col_name in unique_beh_col_names:
-                            grp1 = df[df[grp_col_names[0]] == df[grp_col_names[0]].unique()[0]][beh_col_name].tolist()
-                            grp2 = df[df[grp_col_names[0]] == df[grp_col_names[0]].unique()[1]][beh_col_name].tolist()
+                            grp1 = df[df[grp_col_names[0]] == unique_grp_col_names[0]][beh_col_name].tolist()
+                            grp2 = df[df[grp_col_names[0]] == unique_grp_col_names[1]][beh_col_name].tolist()
 
-                            # Convert value to microseconds if it is a datetime.time datatype and is not None.
-                            grp1 = [(val.hour * 3600 + val.minute * 60 + val.second) * 10**6 + val.microsecond if isinstance(val, datetime.time) and val is not None else val for val in grp1]
-                            grp2 = [(val.hour * 3600 + val.minute * 60 + val.second) * 10**6 + val.microsecond if isinstance(val, datetime.time) and val is not None else val for val in grp2]
+                            # Convert value to seconds if it is a datetime.time datatype and is not None.
+                            grp1 = [(val.hour * 3600 + val.minute * 60 + val.second + round(val.microsecond / 10**6, 1)) if isinstance(val, datetime.time) and val is not None else val for val in grp1]
+                            grp2 = [(val.hour * 3600 + val.minute * 60 + val.second + round(val.microsecond / 10**6, 1)) if isinstance(val, datetime.time) and val is not None else val for val in grp2]
 
-                            # Call ind_ttest from the Tester class
+                            # Perform ttests and graph
                             tester = Tester(self.main_window)
-                            tester.ttest(grp1, grp2, test_type, measured_col_names[i], beh_col_name)
+                            grapher = Grapher(self.main_window)
+                            unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2 = tester.ttest(grp1, grp2, test_type, unique_grp_col_names, measured_col_names[i], beh_col_name)
+                            image = grapher.graph_ttest(unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2)
+                            images.append(image)
                     else:
                         self.main_window.append_prog_messages("Error: Wrong number of groups for Independent T-test.")
             else:
                 self.main_window.append_prog_messages("Error: Wrong test type.")
 
+            return np.array(images)
+
         except Exception as e:
-            self.main_window.append_prog_messages(f"Error occurred during statistical test: {e}")
+            self.main_window.append_prog_messages(f"Error occurred during get_grp_data: {e}")

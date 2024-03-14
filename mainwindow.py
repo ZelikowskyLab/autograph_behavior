@@ -2,8 +2,10 @@ import os
 import sys
 from datetime import datetime
 import pandas as pd
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QVBoxLayout, QLabel, QWidget, QSizePolicy
 from cleaner import Cleaner
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
 
 # Important:
 # You need to run the following command to generate the ui_mainwindow.py file
@@ -21,6 +23,7 @@ class MainWindow(QMainWindow):
         # Used to save the cleaned dataframes
         self.cleaned_dfs = None
         self.measured_col_names = None
+        self.unique_beh_col_names = None
 
         # These variables will be set by the user input
         self.test_type = ""
@@ -40,6 +43,38 @@ class MainWindow(QMainWindow):
         self.ui.run_button.clicked.connect(self.run)
         self.ui.confirm_col_info_button.clicked.connect(self.assign_column_names)
         self.ui.save_all_dfs.clicked.connect(self.save_all_dfs)
+
+        self.initial_tab()
+
+    def initial_tab(self):
+        # Remove all existing tabs
+        while self.ui.tabWidget.count() > 0:
+            self.ui.tabWidget.removeTab(0)
+
+        initial_tab = QWidget()
+        layout = QVBoxLayout()
+        label = QLabel("Graphs will display here after tests run")
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(label)
+        initial_tab.setLayout(layout)
+        self.ui.tabWidget.addTab(initial_tab, "")
+
+    def add_graphs(self, images):
+        # Remove all existing tabs
+        while self.ui.tabWidget.count() > 0:
+            self.ui.tabWidget.removeTab(0)
+
+        for measured_idx, measured_name in enumerate(self.measured_col_names):
+            for beh_idx, beh_name in enumerate(self.unique_beh_col_names):
+                tab = QWidget()
+                layout = QVBoxLayout(tab)
+                label = QLabel(tab)
+                pixmap = QPixmap.fromImage(images[measured_idx * len(self.unique_beh_col_names) + beh_idx])
+                label.setPixmap(pixmap)
+                layout.addWidget(label)
+                layout.setStretch(0, 1)
+                tab_name = f"{measured_name}:{beh_name}"
+                self.ui.tabWidget.addTab(tab, tab_name)
 
     # Update the statistical analysis type
     def update_test_type(self, text):
@@ -172,6 +207,9 @@ class MainWindow(QMainWindow):
     def get_measured_col_names(self):
         return self.measured_col_names
 
+    def get_unique_beh_col_names(self):
+        return self.unique_beh_col_names
+
     def get_test_type(self):
         return self.test_type
 
@@ -199,6 +237,9 @@ class MainWindow(QMainWindow):
 
     def set_measured_col_names(self, measured_col_names):
         self.measured_col_names = measured_col_names
+
+    def set_unique_beh_col_names(self, unique_beh_col_names):
+        self.unique_beh_col_names = unique_beh_col_names
 
     def set_test_type(self, test_type):
         self.test_type = test_type
