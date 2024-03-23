@@ -1,6 +1,5 @@
 from PyQt6 import QtCore
 import matplotlib.pyplot as plt
-import numpy as np
 import io
 from PySide6.QtGui import QImage
 import random
@@ -11,19 +10,22 @@ class Grapher(QtCore.QObject):
 
     def graph_ttest(self, unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic=None, p_value=None, describe1=None, describe2=None):
         try:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(9.6, 9.6))
+            plt.subplots_adjust(top=0.9, bottom=0.35)
 
             # Set title and axis labels
-            ax.set_title(beh_col_name)
+            ax.set_title(beh_col_name, fontsize=16)
             if "Unspecified" in measured_col_name:
-                ax.set_ylabel(beh_col_name)
+                ax.set_ylabel(beh_col_name, fontsize=14)
             else:
-                ax.set_ylabel(measured_col_name)
+                ax.set_ylabel(measured_col_name, fontsize=14)
             ax.yaxis.grid(True)
 
             # Set x axis ticks to the group names
             ax.set_xticks(range(len(unique_grp_col_names)))
-            ax.set_xticklabels(unique_grp_col_names)
+            ax.set_xticklabels(unique_grp_col_names, fontsize=12)
+
+            ax.tick_params(axis='y', labelsize=12)
 
             # Plot bars if means are valid, else plot "No valid data to graph"
             mean1 = describe1.get('mean', None)
@@ -55,16 +57,16 @@ class Grapher(QtCore.QObject):
                 ax.scatter(x_coords_grp2, grp2, color='orange', alpha=0.5)  # Scatter plot for grp2
 
             elif not mean1 or not grp1:
-                ax.text(0, 0, no_data_text, ha='center', va='center')
+                ax.text(0, 0, no_data_text, ha='center', va='center', fontsize=12)
 
             elif not mean2 or not grp2:
-                ax.text(1, 0, no_data_text, ha='center', va='center')
+                ax.text(1, 0, no_data_text, ha='center', va='center', fontsize=12)
 
             # Add text below the plot with T-test results and additional information
-            text = f"T-test Results: T-statistic={t_statistic}, p-value={p_value}\n\n"
-            text += f"{unique_grp_col_names[0]} Describe results: {describe1}\n\n"
-            text += f"{unique_grp_col_names[1]} Describe results: {describe2}"
-            plt.figtext(0.5, 0.1, text, ha='center', va='top', fontsize=10, wrap=True)
+            text = f"T-test Results:\nT-statistic={t_statistic}, p-value={p_value}\n\n"
+            text += f"Group {unique_grp_col_names[0]} Describe results:\n{describe1}\n\n"
+            text += f"Group {unique_grp_col_names[1]} Describe results:\n{describe2}"
+            plt.figtext(0.05, 0.3, text, ha='left', va='top', fontsize=12, wrap=True, bbox=dict(boxstyle="square, pad=0.5", fc="white", ec="black", lw=0))
 
             # Convert plot to QImage PNG
             buffer = io.BytesIO()

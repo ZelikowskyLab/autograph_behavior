@@ -1,7 +1,6 @@
 from PyQt6 import QtCore
 from scipy import stats
 import pandas as pd
-import numpy as np
 
 class Tester(QtCore.QObject):
     def __init__(self, main_window):

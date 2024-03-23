@@ -17,19 +17,21 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QHBoxLayout,
     QLabel, QLayout, QMainWindow, QMenuBar,
-    QPlainTextEdit, QPushButton, QSizePolicy, QStatusBar,
-    QTabWidget, QTextBrowser, QWidget)
+    QPlainTextEdit, QProgressBar, QPushButton, QSizePolicy,
+    QStatusBar, QTabWidget, QTextBrowser, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1113, 1014)
+        MainWindow.resize(1070, 808)
+        MainWindow.setAnimated(True)
+        MainWindow.setTabShape(QTabWidget.Rounded)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayoutWidget = QWidget(self.centralwidget)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(10, 10, 387, 744))
+        self.gridLayoutWidget.setGeometry(QRect(10, 10, 387, 441))
         self.input_params = QGridLayout(self.gridLayoutWidget)
         self.input_params.setObjectName(u"input_params")
         self.input_params.setSizeConstraint(QLayout.SetDefaultConstraint)
@@ -139,7 +141,7 @@ class Ui_MainWindow(object):
 
         self.gridLayoutWidget_2 = QWidget(self.centralwidget)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(420, 740, 494, 189))
+        self.gridLayoutWidget_2.setGeometry(QRect(410, 620, 494, 121))
         self.save_graph_options = QGridLayout(self.gridLayoutWidget_2)
         self.save_graph_options.setObjectName(u"save_graph_options")
         self.save_graph_options.setContentsMargins(0, 0, 0, 0)
@@ -148,20 +150,20 @@ class Ui_MainWindow(object):
 
         self.save_graph_options.addWidget(self.out_png_location_text, 0, 1, 1, 1)
 
-        self.save_one_image = QPushButton(self.gridLayoutWidget_2)
-        self.save_one_image.setObjectName(u"save_one_image")
-
-        self.save_graph_options.addWidget(self.save_one_image, 1, 0, 1, 1)
-
         self.save_all_ppt = QPushButton(self.gridLayoutWidget_2)
         self.save_all_ppt.setObjectName(u"save_all_ppt")
 
         self.save_graph_options.addWidget(self.save_all_ppt, 2, 1, 1, 1)
 
-        self.out_png_location_button = QPushButton(self.gridLayoutWidget_2)
-        self.out_png_location_button.setObjectName(u"out_png_location_button")
+        self.save_one_image = QPushButton(self.gridLayoutWidget_2)
+        self.save_one_image.setObjectName(u"save_one_image")
 
-        self.save_graph_options.addWidget(self.out_png_location_button, 0, 0, 1, 1)
+        self.save_graph_options.addWidget(self.save_one_image, 1, 0, 1, 1)
+
+        self.save_all_dfs = QPushButton(self.gridLayoutWidget_2)
+        self.save_all_dfs.setObjectName(u"save_all_dfs")
+
+        self.save_graph_options.addWidget(self.save_all_dfs, 3, 1, 1, 1)
 
         self.save_all_images = QPushButton(self.gridLayoutWidget_2)
         self.save_all_images.setObjectName(u"save_all_images")
@@ -173,17 +175,17 @@ class Ui_MainWindow(object):
 
         self.save_graph_options.addWidget(self.save_one_ppt, 2, 0, 1, 1)
 
-        self.save_all_dfs = QPushButton(self.gridLayoutWidget_2)
-        self.save_all_dfs.setObjectName(u"save_all_dfs")
+        self.out_png_location_button = QPushButton(self.gridLayoutWidget_2)
+        self.out_png_location_button.setObjectName(u"out_png_location_button")
 
-        self.save_graph_options.addWidget(self.save_all_dfs, 3, 1, 1, 1)
+        self.save_graph_options.addWidget(self.out_png_location_button, 0, 0, 1, 1)
 
         self.prog_msgs_text = QTextBrowser(self.centralwidget)
         self.prog_msgs_text.setObjectName(u"prog_msgs_text")
-        self.prog_msgs_text.setGeometry(QRect(10, 760, 381, 201))
+        self.prog_msgs_text.setGeometry(QRect(10, 450, 381, 291))
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
-        self.tabWidget.setGeometry(QRect(420, 10, 681, 731))
+        self.tabWidget.setGeometry(QRect(410, 10, 641, 611))
         self.tabWidget.setLayoutDirection(Qt.LeftToRight)
         self.tabWidget.setTabPosition(QTabWidget.North)
         self.tabWidget.setTabShape(QTabWidget.Rounded)
@@ -197,10 +199,18 @@ class Ui_MainWindow(object):
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
         self.tabWidget.addTab(self.tab_2, "")
+        self.progress_bar = QProgressBar(self.centralwidget)
+        self.progress_bar.setObjectName(u"progress_bar")
+        self.progress_bar.setGeometry(QRect(10, 740, 381, 4))
+        self.progress_bar.setValue(0)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setOrientation(Qt.Horizontal)
+        self.progress_bar.setInvertedAppearance(False)
+        self.progress_bar.setTextDirection(QProgressBar.TopToBottom)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1113, 25))
+        self.menubar.setGeometry(QRect(0, 0, 1070, 21))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -216,14 +226,17 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+#if QT_CONFIG(whatsthis)
+        MainWindow.setWhatsThis("")
+#endif // QT_CONFIG(whatsthis)
         self.prog_msgs_label.setText(QCoreApplication.translate("MainWindow", u"Program Messages:", None))
         self.analysis_type_2.setText(QCoreApplication.translate("MainWindow", u"Program that input data is from:", None))
         self.analysis_type_combo_2.setItemText(0, QCoreApplication.translate("MainWindow", u"Choose program . . .", None))
         self.analysis_type_combo_2.setItemText(1, QCoreApplication.translate("MainWindow", u"Observer", None))
         self.analysis_type_combo_2.setItemText(2, QCoreApplication.translate("MainWindow", u"Ethovision", None))
 
-        self.grp_cols_label.setText(QCoreApplication.translate("MainWindow", u"Group column(s)", None))
-        self.beh_cols_label.setText(QCoreApplication.translate("MainWindow", u"Behavior column(s)", None))
+        self.grp_cols_label.setText(QCoreApplication.translate("MainWindow", u"Group column(s) *", None))
+        self.beh_cols_label.setText(QCoreApplication.translate("MainWindow", u"Behavior column(s) *", None))
         self.in_location_text.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -234,7 +247,7 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">No path chosen</p></body></html>", None))
         self.confirm_col_info_button.setText(QCoreApplication.translate("MainWindow", u"Confirm all column info", None))
         self.in_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose input file location:", None))
-        self.measured_cols_label.setText(QCoreApplication.translate("MainWindow", u"Measured column(s) (optional)", None))
+        self.measured_cols_label.setText(QCoreApplication.translate("MainWindow", u"Measured column(s)", None))
         self.run_button.setText(QCoreApplication.translate("MainWindow", u"Run ->", None))
         self.analysis_type.setText(QCoreApplication.translate("MainWindow", u"Statistical analysis type:", None))
         self.analysis_type_combo.setItemText(0, QCoreApplication.translate("MainWindow", u"Choose Test Type . . .", None))
@@ -242,7 +255,7 @@ class Ui_MainWindow(object):
         self.analysis_type_combo.setItemText(2, QCoreApplication.translate("MainWindow", u"Dependent T-test", None))
         self.analysis_type_combo.setItemText(3, QCoreApplication.translate("MainWindow", u"Anova", None))
 
-        self.mice_cols_label.setText(QCoreApplication.translate("MainWindow", u"MiceID column(s)", None))
+        self.mice_cols_label.setText(QCoreApplication.translate("MainWindow", u"MiceID column(s) *", None))
         self.out_png_location_text.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -251,12 +264,12 @@ class Ui_MainWindow(object):
 "li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">No path chosen</p></body></html>", None))
-        self.save_one_image.setText(QCoreApplication.translate("MainWindow", u"Save this image only", None))
         self.save_all_ppt.setText(QCoreApplication.translate("MainWindow", u"Save all images to power point", None))
-        self.out_png_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose output save location:", None))
+        self.save_one_image.setText(QCoreApplication.translate("MainWindow", u"Save this image only", None))
+        self.save_all_dfs.setText(QCoreApplication.translate("MainWindow", u"Save all cleaned dataframes to exel", None))
         self.save_all_images.setText(QCoreApplication.translate("MainWindow", u"Save all images", None))
         self.save_one_ppt.setText(QCoreApplication.translate("MainWindow", u"Save this image only to power point", None))
-        self.save_all_dfs.setText(QCoreApplication.translate("MainWindow", u"Save all cleaned dataframes to exel", None))
+        self.out_png_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose output save location:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Graphs will appear here after tests tun", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
     # retranslateUi

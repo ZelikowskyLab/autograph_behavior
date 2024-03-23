@@ -2,10 +2,11 @@ import os
 import sys
 from datetime import datetime
 import pandas as pd
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QVBoxLayout, QLabel, QWidget, QSizePolicy
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QVBoxLayout, QLabel, QWidget
 from cleaner import Cleaner
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
+import time
 
 # Important:
 # You need to run the following command to generate the ui_mainwindow.py file
@@ -36,6 +37,11 @@ class MainWindow(QMainWindow):
 
         self.valid_formats = ['.csv', '.xlsx']
 
+        # Names to save images as
+        self.graph_names = []
+        # Stores the images of all graphs
+        self.all_graphs = []
+
         # Connect ui elements to methods
         self.ui.analysis_type_combo.currentTextChanged.connect(self.update_test_type)
         self.ui.in_location_button.clicked.connect(self.open_file_dialog)
@@ -43,10 +49,21 @@ class MainWindow(QMainWindow):
         self.ui.run_button.clicked.connect(self.run)
         self.ui.confirm_col_info_button.clicked.connect(self.assign_column_names)
         self.ui.save_all_dfs.clicked.connect(self.save_all_dfs)
+        self.ui.save_all_images.clicked.connect(self.save_graphs)
+        self.ui.save_one_image.clicked.connect(self.save_graph)
 
-        self.initial_tab()
+        self.initialize_tabs()
 
-    def initial_tab(self):
+    def update_progress_bar(self, target_percent):
+        if target_percent == 0:
+            self.ui.progress_bar.setValue(0);
+
+        else:
+            while self.ui.progress_bar.value() < target_percent:
+                time.sleep(0.00001)
+                self.ui.progress_bar.setValue(self.ui.progress_bar.value() + 1)
+
+    def initialize_tabs(self):
         # Remove all existing tabs
         while self.ui.tabWidget.count() > 0:
             self.ui.tabWidget.removeTab(0)
@@ -60,26 +77,96 @@ class MainWindow(QMainWindow):
         self.ui.tabWidget.addTab(initial_tab, "")
 
     def add_graphs(self, images):
-        # Remove all existing tabs
-        while self.ui.tabWidget.count() > 0:
-            self.ui.tabWidget.removeTab(0)
+           # Remove all existing tabs and clear graph_names
+           while self.ui.tabWidget.count() > 0:
+               self.ui.tabWidget.removeTab(0)
 
-        for measured_idx, measured_name in enumerate(self.measured_col_names):
-            for beh_idx, beh_name in enumerate(self.unique_beh_col_names):
-                tab = QWidget()
-                layout = QVBoxLayout(tab)
-                label = QLabel(tab)
-                pixmap = QPixmap.fromImage(images[measured_idx * len(self.unique_beh_col_names) + beh_idx])
-                label.setPixmap(pixmap)
-                layout.addWidget(label)
-                layout.setStretch(0, 1)
-                tab_name = f"{measured_name}:{beh_name}"
-                self.ui.tabWidget.addTab(tab, tab_name)
+           self.graph_names.clear()
+           self.all_graphs = []
+
+           for measured_idx, measured_name in enumerate(self.measured_col_names):
+               for beh_idx, beh_name in enumerate(self.unique_beh_col_names):
+                   tab = QWidget()
+                   layout = QVBoxLayout()
+                   label = QLabel()
+                   pixmap = QPixmap.fromImage(images[measured_idx * len(self.unique_beh_col_names) + beh_idx])
+                   label.setPixmap(pixmap)
+                   layout.addWidget(label)
+                   tab.setLayout(layout)
+                   tab_name = f"{measured_name}_{beh_name}"
+                   self.ui.tabWidget.addTab(tab, tab_name)
+
+                   self.graph_names.append(tab_name)
+                   self.all_graphs.append(pixmap)
+
+
+    # Save the graph corresponding to the currently focused tab
+    def save_graph(self):
+        if not self.all_graphs:
+            self.append_prog_messages("Error: No graphs to save.")
+            return
+
+        if not self.out_path:
+            self.append_prog_messages("Error: Please select an output folder.")
+            return
+
+        try:
+            current_tab_index = self.ui.tabWidget.currentIndex()
+
+            if current_tab_index is not None:
+                image = self.all_graphs[current_tab_index]
+                graph_name = self.graph_names[current_tab_index]
+                image_path = os.path.join(self.out_path, f"{graph_name}.png")
+
+                if os.path.exists(image_path):
+                    if not self.overwrite_popup(image_path):
+                        return
+                    else:
+                        image.save(image_path, "PNG")
+                else:
+                    image.save(image_path, "PNG")
+            else:
+                self.append_prog_messages("Error: No tab selected.")
+            self.append_prog_messages(f"Graph '{graph_name}' saved successfully.")
+        except Exception as e:
+            self.append_prog_messages(f"Error: {e}")
+
+    # Save all images from all_graphs to out_path
+    def save_graphs(self):
+        if not self.all_graphs:
+            self.append_prog_messages("Error: No graphs to save.")
+            return
+
+        if not self.out_path:
+            self.append_prog_messages("Error: Please select an output folder.")
+            return
+
+        try:
+            for idx, (image, graph_name) in enumerate(zip(self.all_graphs, self.graph_names)):
+                image_path = os.path.join(self.out_path, f"{graph_name}.png")
+
+                if os.path.exists(image_path):
+                    if not self.overwrite_popup(image_path):
+                        continue
+                    else:
+                        image.save(image_path, "PNG")
+
+                else:
+                    image.save(image_path, "PNG")
+
+            self.append_prog_messages("Graphs saved successfully.")
+        except Exception as e:
+            self.append_prog_messages(f"Error: {e}")
+
+
 
     # Update the statistical analysis type
     def update_test_type(self, text):
         self.set_test_type(text)
+        self.update_progress_bar(50)
         self.append_prog_messages(f"Test type updated: {text}")
+        self.update_progress_bar(100)
+        self.update_progress_bar(0)
 
     # Depending on which button is pressed, save file/folder location to variable
     def open_file_dialog(self):
@@ -91,21 +178,31 @@ class MainWindow(QMainWindow):
         # Determine which button was pressed
         sender_button = self.sender()
 
+        # Select input path
         if sender_button == self.ui.in_location_button:
+            self.update_progress_bar(50)
             file_path, _ = file_dialog.getOpenFileName(self, "Select Input File", "", "All Files (*);;CSV Files (*.csv)")
             if file_path:
                 if self.check_file_format(file_path):
                     self.set_in_path(file_path)
                     self.ui.in_location_text.setText(file_path)
                     self.append_prog_messages("Input file selected.")
+                    self.update_progress_bar(100)
                 else:
                     self.append_prog_messages("Error: Unsupported file format.")
+
+        # Select output path
         else:
+            self.update_progress_bar(50)
             folder_path = file_dialog.getExistingDirectory(self, "Select Output Folder")
             if folder_path:
                 self.set_out_path(folder_path)
                 self.ui.out_png_location_text.setText(folder_path)
                 self.append_prog_messages("Output folder selected.")
+                self.update_progress_bar(100)
+
+        self.update_progress_bar(0)
+
 
     # Checks for valid file format
     def check_file_format(self, file_path):
@@ -158,6 +255,7 @@ class MainWindow(QMainWindow):
                 self.append_prog_messages("Error: No input file selected.")
         except Exception as e:
             self.append_prog_messages(f"Error: {e}")
+        self.update_progress_bar(0)
 
     # Save cleaned DataFrames to specified directory
     def save_all_dfs(self):
@@ -188,13 +286,14 @@ class MainWindow(QMainWindow):
     def overwrite_popup(self, output_path):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Question)
-        msg_box.setText("The file already exists.")
+        msg_box.setText(f"The file {output_path} already exists.")
         msg_box.setInformativeText("Do you want to replace it?")
         msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
         msg_box.setDefaultButton(QMessageBox.Cancel)
 
         result = msg_box.exec()
         if result == QMessageBox.Yes:
+            self.append_prog_messages(f"File {output_path} overwritten")
             return True  # User wants to overwrite the file
         else:
             self.append_prog_messages("Save operation canceled.")

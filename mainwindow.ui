@@ -6,12 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1113</width>
-    <height>1014</height>
+    <width>1070</width>
+    <height>808</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="whatsThis">
+   <string/>
+  </property>
+  <property name="animated">
+   <bool>true</bool>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="gridLayoutWidget">
@@ -20,7 +29,7 @@
       <x>10</x>
       <y>10</y>
       <width>387</width>
-      <height>744</height>
+      <height>441</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="input_params">
@@ -76,7 +85,7 @@
      <item row="3" column="0">
       <widget class="QLabel" name="grp_cols_label">
        <property name="text">
-        <string>Group column(s)</string>
+        <string>Group column(s) *</string>
        </property>
       </widget>
      </item>
@@ -86,7 +95,7 @@
      <item row="7" column="0">
       <widget class="QLabel" name="beh_cols_label">
        <property name="text">
-        <string>Behavior column(s)</string>
+        <string>Behavior column(s) *</string>
        </property>
       </widget>
      </item>
@@ -127,7 +136,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <item row="10" column="0">
       <widget class="QLabel" name="measured_cols_label">
        <property name="text">
-        <string>Measured column(s) (optional)</string>
+        <string>Measured column(s)</string>
        </property>
       </widget>
      </item>
@@ -176,7 +185,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <item row="5" column="0">
       <widget class="QLabel" name="mice_cols_label">
        <property name="text">
-        <string>MiceID column(s)</string>
+        <string>MiceID column(s) *</string>
        </property>
       </widget>
      </item>
@@ -188,10 +197,10 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <widget class="QWidget" name="gridLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>740</y>
+      <x>410</x>
+      <y>620</y>
       <width>494</width>
-      <height>189</height>
+      <height>121</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="save_graph_options">
@@ -209,13 +218,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="save_one_image">
-       <property name="text">
-        <string>Save this image only</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="1">
       <widget class="QPushButton" name="save_all_ppt">
        <property name="text">
@@ -223,10 +225,17 @@ li.checked::marker { content: &quot;\2612&quot;; }
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QPushButton" name="out_png_location_button">
+     <item row="1" column="0">
+      <widget class="QPushButton" name="save_one_image">
        <property name="text">
-        <string>Choose output save location:</string>
+        <string>Save this image only</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QPushButton" name="save_all_dfs">
+       <property name="text">
+        <string>Save all cleaned dataframes to exel</string>
        </property>
       </widget>
      </item>
@@ -244,10 +253,10 @@ li.checked::marker { content: &quot;\2612&quot;; }
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QPushButton" name="save_all_dfs">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="out_png_location_button">
        <property name="text">
-        <string>Save all cleaned dataframes to exel</string>
+        <string>Choose output save location:</string>
        </property>
       </widget>
      </item>
@@ -257,19 +266,19 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>760</y>
+      <y>450</y>
       <width>381</width>
-      <height>201</height>
+      <height>291</height>
      </rect>
     </property>
    </widget>
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>410</x>
       <y>10</y>
-      <width>681</width>
-      <height>731</height>
+      <width>641</width>
+      <height>611</height>
      </rect>
     </property>
     <property name="layoutDirection">
@@ -307,14 +316,39 @@ li.checked::marker { content: &quot;\2612&quot;; }
      </attribute>
     </widget>
    </widget>
+   <widget class="QProgressBar" name="progress_bar">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>740</y>
+      <width>381</width>
+      <height>4</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>false</bool>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="invertedAppearance">
+     <bool>false</bool>
+    </property>
+    <property name="textDirection">
+     <enum>QProgressBar::TopToBottom</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1113</width>
-     <height>25</height>
+     <width>1070</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

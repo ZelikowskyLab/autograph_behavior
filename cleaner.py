@@ -18,19 +18,23 @@ class Cleaner(QtCore.QObject):
             # Convert file to df
             df = self.file_to_df(path)
             self.main_window.append_prog_messages("File loaded successfully.")
+            self.main_window.update_progress_bar(10)
 
             # Clean all column entries
             cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols = self.clean_col_names(df, mice_cols, grp_cols, beh_cols, measured_cols)
             self.main_window.append_prog_messages("Columns cleaned successfully.")
+            self.main_window.update_progress_bar(25)
 
             # Reformat
             self.main_window.cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names = self.reformat(df, cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols)
             self.main_window.append_prog_messages("Dataframes reformatted succesfully.")
             self.main_window.set_unique_beh_col_names(unique_beh_col_names)
+            self.main_window.update_progress_bar(50)
 
-            # Get groups data to run tests on
+            # Get groups data to run tests on then display graphs
             self.main_window.add_graphs(self.get_grp_data(self.main_window.get_test_type(), self.main_window.get_cleaned_dfs(), mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names))
             self.main_window.append_prog_messages("Tests run succesfully.")
+            self.main_window.update_progress_bar(100)
 
         except Exception as e:
             self.main_window.append_prog_messages(f"Error occurred while cleaning: {e}")
@@ -47,6 +51,8 @@ class Cleaner(QtCore.QObject):
             else:
                 self.main_window.append_prog_messages("Unsupported file format.")
                 return None
+
+            self.main_window.update_progress_bar(5)
 
             self.main_window.append_prog_messages("Converted file to DataFrame.")
             self.main_window.append_prog_messages(f"DataFrame size: {df.size} elements")
@@ -183,6 +189,10 @@ class Cleaner(QtCore.QObject):
         try:
             images = []
             if test_type == "Independent T-test":
+
+                percent_increment = 50 / len(cleaned_dfs)
+                target_percent = 50 + percent_increment
+
                 for i, df in enumerate(cleaned_dfs):
                     unique_grp_col_names = df[grp_col_names[0]].unique()
                     if len(unique_grp_col_names) == 2:
@@ -202,6 +212,9 @@ class Cleaner(QtCore.QObject):
                             images.append(image)
                     else:
                         self.main_window.append_prog_messages("Error: Wrong number of groups for Independent T-test.")
+
+                    percent_increment += percent_increment
+                    self.main_window.update_progress_bar(target_percent)
             else:
                 self.main_window.append_prog_messages("Error: Wrong test type.")
 
