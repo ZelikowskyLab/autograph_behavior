@@ -1,8 +1,8 @@
-from PyQt6 import QtCore
-import matplotlib.pyplot as plt
 import io
-from PySide6.QtGui import QImage
 import random
+from PyQt6 import QtCore
+from PySide6.QtGui import QImage
+import matplotlib.pyplot as plt
 
 class Grapher(QtCore.QObject):
     def __init__(self, main_window):
@@ -14,11 +14,11 @@ class Grapher(QtCore.QObject):
             plt.subplots_adjust(top=0.9, bottom=0.35)
 
             # Set title and axis labels
-            ax.set_title(beh_col_name, fontsize=16)
+            ax.set_title(beh_col_name, fontsize=18)
             if "Unspecified" in measured_col_name:
-                ax.set_ylabel(beh_col_name, fontsize=14)
+                ax.set_ylabel(beh_col_name, fontsize=16)
             else:
-                ax.set_ylabel(measured_col_name, fontsize=14)
+                ax.set_ylabel(measured_col_name, fontsize=16)
             ax.yaxis.grid(True)
 
             # Set x axis ticks to the group names
@@ -43,24 +43,23 @@ class Grapher(QtCore.QObject):
                 ax.set_ylim(min_value - buffer_range, max_value + buffer_range)
 
                 # Plot p-value text, mean bars, and individual points
-                self.main_window.append_prog_messages("truee")
                 highest_bar_height = max(mean1, mean2)
-                ax.text(0.5, highest_bar_height, f"p-value: {p_value:.2f}", ha='center', va='bottom', fontsize=12)
+                ax.text(0.5, highest_bar_height, f"p-value: {p_value:.2f}", ha='center', va='bottom', fontsize=14)
 
                 # Individual values
                 x_coords_grp1 = [random.uniform(-0.2, 0.2) for _ in range(len(grp1))]
                 ax.bar(0, mean1, align='center', yerr=sem1, label=unique_grp_col_names[0], capsize=5)
-                ax.scatter(x_coords_grp1, grp1, color='blue', alpha=0.5)  # Scatter plot for grp1
+                ax.scatter(x_coords_grp1, grp1, color=(0.0, 0.0, 0.5, 0.5), s=100)  # Scatter plot for grp1
 
                 x_coords_grp2 = [random.uniform(0.8, 1.2) for _ in range(len(grp2))]
-                ax.bar(1, mean2, align='center', yerr=sem2, label=unique_grp_col_names[1], capsize=5)
-                ax.scatter(x_coords_grp2, grp2, color='orange', alpha=0.5)  # Scatter plot for grp2
+                ax.bar(1, mean2, align='center', yerr=sem2, label=unique_grp_col_names[1], capsize=5, color='lightcoral')
+                ax.scatter(x_coords_grp2, grp2, color='#CD5B45', s=100)  # Scatter plot for grp2
 
-            elif not mean1 or not grp1:
-                ax.text(0, 0, no_data_text, ha='center', va='center', fontsize=12)
+            if not mean1 or not grp1:
+                ax.text(0.25, 0.5, no_data_text, ha='center', va='center', fontsize=12)
 
-            elif not mean2 or not grp2:
-                ax.text(1, 0, no_data_text, ha='center', va='center', fontsize=12)
+            if not mean2 or not grp2:
+                ax.text(0.75, 0.5, no_data_text, ha='center', va='center', fontsize=12)
 
             # Add text below the plot with T-test results and additional information
             text = f"T-test Results:\nT-statistic={t_statistic}, p-value={p_value}\n\n"

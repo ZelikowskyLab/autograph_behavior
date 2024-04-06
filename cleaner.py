@@ -1,11 +1,11 @@
-import os
-import pandas as pd
-import re
-from PyQt6 import QtCore
-from tester import Tester
-from grapher import Grapher
 import datetime
+import os
+import re
 import numpy as np
+import pandas as pd
+from PyQt6 import QtCore
+from grapher import Grapher
+from tester import Tester
 
 class Cleaner(QtCore.QObject):
     def __init__(self, main_window):
@@ -17,23 +17,23 @@ class Cleaner(QtCore.QObject):
         try:
             # Convert file to df
             df = self.file_to_df(path)
-            self.main_window.append_prog_messages("File loaded successfully.")
+            self.main_window.append_prog_messages("File loaded.")
             self.main_window.update_progress_bar(10)
 
             # Clean all column entries
             cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols = self.clean_col_names(df, mice_cols, grp_cols, beh_cols, measured_cols)
-            self.main_window.append_prog_messages("Columns cleaned successfully.")
+            self.main_window.append_prog_messages("Columns cleaned.")
             self.main_window.update_progress_bar(25)
 
             # Reformat
             self.main_window.cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names = self.reformat(df, cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols)
-            self.main_window.append_prog_messages("Dataframes reformatted succesfully.")
+            self.main_window.append_prog_messages("Dataframes reformatted.")
             self.main_window.set_unique_beh_col_names(unique_beh_col_names)
             self.main_window.update_progress_bar(50)
 
             # Get groups data to run tests on then display graphs
             self.main_window.add_graphs(self.get_grp_data(self.main_window.get_test_type(), self.main_window.get_cleaned_dfs(), mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names))
-            self.main_window.append_prog_messages("Tests run succesfully.")
+            self.main_window.append_prog_messages("Tests ran.")
             self.main_window.update_progress_bar(100)
 
         except Exception as e:
@@ -41,7 +41,6 @@ class Cleaner(QtCore.QObject):
 
     # Converts file to DataFrame
     def file_to_df(self, path):
-        self.main_window.append_prog_messages("Converting file to DataFrame...")
         try:
             _, file_extension = os.path.splitext(path)
             if file_extension.lower() == '.csv':
@@ -67,7 +66,6 @@ class Cleaner(QtCore.QObject):
     def clean_col_names(self, df, mice_cols, grp_cols, beh_cols, measured_cols):
         try:
             # Clean each list of columns
-            self.main_window.append_prog_messages("Cleaning columns.")
             cleaned_mice_cols     = self.clean_col_list(df, mice_cols)
             cleaned_grp_cols      = self.clean_col_list(df, grp_cols)
             cleaned_beh_cols      = self.clean_col_list(df, beh_cols)

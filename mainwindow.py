@@ -1,12 +1,13 @@
 import os
 import sys
+import time
 from datetime import datetime
 import pandas as pd
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QVBoxLayout, QLabel, QWidget
-from cleaner import Cleaner
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-import time
+from PySide6.QtWidgets import (QApplication, QMainWindow, QFileDialog, QMessageBox,
+                               QVBoxLayout, QLabel, QWidget, QSizePolicy, QColorDialog)
+from cleaner import Cleaner
 
 # Important:
 # You need to run the following command to generate the ui_mainwindow.py file
@@ -51,6 +52,7 @@ class MainWindow(QMainWindow):
         self.ui.save_all_dfs.clicked.connect(self.save_all_dfs)
         self.ui.save_all_images.clicked.connect(self.save_graphs)
         self.ui.save_one_image.clicked.connect(self.save_graph)
+        self.ui.color_options.clicked.connect(self.color_popup)
 
         self.initialize_tabs()
 
@@ -89,8 +91,16 @@ class MainWindow(QMainWindow):
                    tab = QWidget()
                    layout = QVBoxLayout()
                    label = QLabel()
+
+                   # Set alignment properties
+                   label.setAlignment(Qt.AlignCenter | Qt.AlignHCenter)
                    pixmap = QPixmap.fromImage(images[measured_idx * len(self.unique_beh_col_names) + beh_idx])
+
+                   # Scale pixmap to fit label
+                   pixmap = pixmap.scaled(label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
                    label.setPixmap(pixmap)
+                   label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
                    layout.addWidget(label)
                    tab.setLayout(layout)
                    tab_name = f"{measured_name}_{beh_name}"
@@ -98,7 +108,6 @@ class MainWindow(QMainWindow):
 
                    self.graph_names.append(tab_name)
                    self.all_graphs.append(pixmap)
-
 
     # Save the graph corresponding to the currently focused tab
     def save_graph(self):
@@ -117,7 +126,7 @@ class MainWindow(QMainWindow):
                 image = self.all_graphs[current_tab_index]
                 graph_name = self.graph_names[current_tab_index]
                 image_path = os.path.join(self.out_path, f"{graph_name}.png")
-
+                self.update_progress_bar(50)
                 if os.path.exists(image_path):
                     if not self.overwrite_popup(image_path):
                         return
@@ -127,7 +136,10 @@ class MainWindow(QMainWindow):
                     image.save(image_path, "PNG")
             else:
                 self.append_prog_messages("Error: No tab selected.")
-            self.append_prog_messages(f"Graph '{graph_name}' saved successfully.")
+            self.append_prog_messages(f"Graph '{graph_name}' saved.")
+
+            self.update_progress_bar(100)
+            self.update_progress_bar(0)
         except Exception as e:
             self.append_prog_messages(f"Error: {e}")
 
@@ -144,7 +156,7 @@ class MainWindow(QMainWindow):
         try:
             for idx, (image, graph_name) in enumerate(zip(self.all_graphs, self.graph_names)):
                 image_path = os.path.join(self.out_path, f"{graph_name}.png")
-
+                self.update_progress_bar(50)
                 if os.path.exists(image_path):
                     if not self.overwrite_popup(image_path):
                         continue
@@ -154,16 +166,20 @@ class MainWindow(QMainWindow):
                 else:
                     image.save(image_path, "PNG")
 
-            self.append_prog_messages("Graphs saved successfully.")
+            self.append_prog_messages("Graphs saved.")
+            self.update_progress_bar(100)
+            self.update_progress_bar(0)
+
         except Exception as e:
             self.append_prog_messages(f"Error: {e}")
 
+    def color_popup(self):
+        color_dialog = QColorDialog(self)
 
 
     # Update the statistical analysis type
     def update_test_type(self, text):
         self.set_test_type(text)
-        self.update_progress_bar(50)
         self.append_prog_messages(f"Test type updated: {text}")
         self.update_progress_bar(100)
         self.update_progress_bar(0)
@@ -203,7 +219,6 @@ class MainWindow(QMainWindow):
 
         self.update_progress_bar(0)
 
-
     # Checks for valid file format
     def check_file_format(self, file_path):
         ext = os.path.splitext(file_path)[-1].lower()
@@ -222,6 +237,7 @@ class MainWindow(QMainWindow):
             grp_cols      = [col.strip() for col in      grp_cols_input.split(",") if col.strip()]
             beh_cols      = [col.strip() for col in      beh_cols_input.split(",")  if col.strip()]
             measured_cols = [col.strip() for col in measured_cols_input.split(",") if col.strip()]
+            self.update_progress_bar(50)
 
             # Assign columns to variables
             self.set_mice_cols(mice_cols)
@@ -230,8 +246,11 @@ class MainWindow(QMainWindow):
             self.set_measured_cols(measured_cols)
 
             self.append_prog_messages("Column information confirmed.")
+            self.update_progress_bar(100)
+            self.update_progress_bar(0)
         except Exception as e:
             self.append_prog_messages(f"Error: {e}")
+
 
     # Appends to the program messages text box
     def append_prog_messages(self, message):
@@ -245,7 +264,6 @@ class MainWindow(QMainWindow):
             if in_path:
                 if self.test_type and self.test_type != "Choose Test Type":
                     if self.mice_cols and self.grp_cols and self.beh_cols:
-                        self.append_prog_messages("Running...")
                         self.cleaner.main(in_path, self.mice_cols, self.grp_cols, self.beh_cols, self.measured_cols)
                     else:
                         self.append_prog_messages("Error: Please enter and confirm all column info.")
@@ -253,9 +271,9 @@ class MainWindow(QMainWindow):
                     self.append_prog_messages("Error: Please choose a test type to perform.")
             else:
                 self.append_prog_messages("Error: No input file selected.")
+            self.update_progress_bar(0)
         except Exception as e:
             self.append_prog_messages(f"Error: {e}")
-        self.update_progress_bar(0)
 
     # Save cleaned DataFrames to specified directory
     def save_all_dfs(self):
@@ -268,6 +286,7 @@ class MainWindow(QMainWindow):
                         if not self.overwrite_popup(output_path):
                             return  # Save operation canceled by user
                     with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
+                        self.update_progress_bar(50)
                         for idx, (reformatted_df, measured_col_name) in enumerate(zip(self.cleaned_dfs, self.measured_col_names)):
                             # Truncate sheet name if greater than or equal to 31 characters
                             if len(measured_col_name) >= 31:
@@ -275,10 +294,14 @@ class MainWindow(QMainWindow):
                                 self.append_prog_messages(f"Sheet name '{measured_col_name}' truncated.")
                             reformatted_df.to_excel(writer, sheet_name=measured_col_name, index=False)
                     self.append_prog_messages("All reformatted DataFrames saved.")
+                    self.update_progress_bar(100)
+                    self.update_progress_bar(0)
                 else:
                     self.append_prog_messages("Error: Please select an output folder.")
+                    self.update_progress_bar(0)
             else:
                 self.append_prog_messages("Error: No reformatted DataFrames to save.")
+                self.update_progress_bar(0)
         except Exception as e:
             self.append_prog_messages(f"Error: {e}")
 

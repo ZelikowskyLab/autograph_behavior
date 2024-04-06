@@ -1,6 +1,6 @@
+import pandas as pd
 from PyQt6 import QtCore
 from scipy import stats
-import pandas as pd
 
 class Tester(QtCore.QObject):
     def __init__(self, main_window):
@@ -53,13 +53,13 @@ class Tester(QtCore.QObject):
 
             # If any group is all None, return it as is
             if grp1_all_none or grp2_all_none:
-                self.main_window.append_prog_messages(
-                    f"No valid data for t-test: {measured_col_name}, {beh_col_name}\n"
-                    f"Group {unique_grp_col_names[0]}: {grp1}\n"
-                    f"Group {unique_grp_col_names[1]}: {grp2}\n"
-                    f"Describe {unique_grp_col_names[0]}: {describe1}\n"
-                    f"Describe {unique_grp_col_names[1]}: {describe2}"
-                )
+                # self.main_window.append_prog_messages(
+                #     f"No valid data for t-test: {measured_col_name}, {beh_col_name}\n"
+                #     f"Group {unique_grp_col_names[0]}: {grp1}\n"
+                #     f"Group {unique_grp_col_names[1]}: {grp2}\n"
+                #     f"Describe {unique_grp_col_names[0]}: {describe1}\n"
+                #     f"Describe {unique_grp_col_names[1]}: {describe2}"
+                # )
                 return unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, None, None, describe1, describe2
 
             if ttest_type == "Independent T-test":
@@ -70,15 +70,15 @@ class Tester(QtCore.QObject):
                 t_statistic = None
                 p_value = None
 
-            self.main_window.append_prog_messages(
-                f"T-Test Results for {measured_col_name} and {beh_col_name}:\n"
-                f"Group {unique_grp_col_names[0]}: {grp1}\n"
-                f"Group {unique_grp_col_names[1]}: {grp2}\n"
-                f"T-Statistic: {t_statistic}\n"
-                f"P-Value: {p_value}\n"
-                f"Describe {unique_grp_col_names[0]}: {describe1}\n"
-                f"Describe {unique_grp_col_names[1]}: {describe2}"
-            )
+            # self.main_window.append_prog_messages(
+            #     f"T-Test Results for {measured_col_name} and {beh_col_name}:\n"
+            #     f"Group {unique_grp_col_names[0]}: {grp1}\n"
+            #     f"Group {unique_grp_col_names[1]}: {grp2}\n"
+            #     f"T-Statistic: {t_statistic}\n"
+            #     f"P-Value: {p_value}\n"
+            #     f"Describe {unique_grp_col_names[0]}: {describe1}\n"
+            #     f"Describe {unique_grp_col_names[1]}: {describe2}"
+            # )
             return unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2
 
         except Exception as e:

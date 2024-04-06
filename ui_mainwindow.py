@@ -24,14 +24,14 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1070, 808)
+        MainWindow.resize(902, 729)
         MainWindow.setAnimated(True)
         MainWindow.setTabShape(QTabWidget.Rounded)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayoutWidget = QWidget(self.centralwidget)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(10, 10, 387, 441))
+        self.gridLayoutWidget.setGeometry(QRect(10, 10, 351, 441))
         self.input_params = QGridLayout(self.gridLayoutWidget)
         self.input_params.setObjectName(u"input_params")
         self.input_params.setSizeConstraint(QLayout.SetDefaultConstraint)
@@ -141,15 +141,10 @@ class Ui_MainWindow(object):
 
         self.gridLayoutWidget_2 = QWidget(self.centralwidget)
         self.gridLayoutWidget_2.setObjectName(u"gridLayoutWidget_2")
-        self.gridLayoutWidget_2.setGeometry(QRect(410, 620, 494, 121))
+        self.gridLayoutWidget_2.setGeometry(QRect(370, 538, 401, 121))
         self.save_graph_options = QGridLayout(self.gridLayoutWidget_2)
         self.save_graph_options.setObjectName(u"save_graph_options")
         self.save_graph_options.setContentsMargins(0, 0, 0, 0)
-        self.out_png_location_text = QTextBrowser(self.gridLayoutWidget_2)
-        self.out_png_location_text.setObjectName(u"out_png_location_text")
-
-        self.save_graph_options.addWidget(self.out_png_location_text, 0, 1, 1, 1)
-
         self.save_all_ppt = QPushButton(self.gridLayoutWidget_2)
         self.save_all_ppt.setObjectName(u"save_all_ppt")
 
@@ -165,11 +160,6 @@ class Ui_MainWindow(object):
 
         self.save_graph_options.addWidget(self.save_all_dfs, 3, 1, 1, 1)
 
-        self.save_all_images = QPushButton(self.gridLayoutWidget_2)
-        self.save_all_images.setObjectName(u"save_all_images")
-
-        self.save_graph_options.addWidget(self.save_all_images, 1, 1, 1, 1)
-
         self.save_one_ppt = QPushButton(self.gridLayoutWidget_2)
         self.save_one_ppt.setObjectName(u"save_one_ppt")
 
@@ -180,12 +170,22 @@ class Ui_MainWindow(object):
 
         self.save_graph_options.addWidget(self.out_png_location_button, 0, 0, 1, 1)
 
+        self.save_all_images = QPushButton(self.gridLayoutWidget_2)
+        self.save_all_images.setObjectName(u"save_all_images")
+
+        self.save_graph_options.addWidget(self.save_all_images, 1, 1, 1, 1)
+
+        self.out_png_location_text = QTextBrowser(self.gridLayoutWidget_2)
+        self.out_png_location_text.setObjectName(u"out_png_location_text")
+
+        self.save_graph_options.addWidget(self.out_png_location_text, 0, 1, 1, 1)
+
         self.prog_msgs_text = QTextBrowser(self.centralwidget)
         self.prog_msgs_text.setObjectName(u"prog_msgs_text")
-        self.prog_msgs_text.setGeometry(QRect(10, 450, 381, 291))
+        self.prog_msgs_text.setGeometry(QRect(10, 450, 351, 201))
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
-        self.tabWidget.setGeometry(QRect(410, 10, 641, 611))
+        self.tabWidget.setGeometry(QRect(370, 10, 521, 521))
         self.tabWidget.setLayoutDirection(Qt.LeftToRight)
         self.tabWidget.setTabPosition(QTabWidget.North)
         self.tabWidget.setTabShape(QTabWidget.Rounded)
@@ -201,16 +201,19 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab_2, "")
         self.progress_bar = QProgressBar(self.centralwidget)
         self.progress_bar.setObjectName(u"progress_bar")
-        self.progress_bar.setGeometry(QRect(10, 740, 381, 4))
+        self.progress_bar.setGeometry(QRect(10, 650, 351, 4))
         self.progress_bar.setValue(0)
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setOrientation(Qt.Horizontal)
         self.progress_bar.setInvertedAppearance(False)
         self.progress_bar.setTextDirection(QProgressBar.TopToBottom)
+        self.color_options = QPushButton(self.centralwidget)
+        self.color_options.setObjectName(u"color_options")
+        self.color_options.setGeometry(QRect(780, 530, 111, 31))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1070, 21))
+        self.menubar.setGeometry(QRect(0, 0, 902, 21))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -256,6 +259,12 @@ class Ui_MainWindow(object):
         self.analysis_type_combo.setItemText(3, QCoreApplication.translate("MainWindow", u"Anova", None))
 
         self.mice_cols_label.setText(QCoreApplication.translate("MainWindow", u"MiceID column(s) *", None))
+        self.save_all_ppt.setText(QCoreApplication.translate("MainWindow", u"Save all images to power point", None))
+        self.save_one_image.setText(QCoreApplication.translate("MainWindow", u"Save this image only", None))
+        self.save_all_dfs.setText(QCoreApplication.translate("MainWindow", u"Save all cleaned dataframes to exel", None))
+        self.save_one_ppt.setText(QCoreApplication.translate("MainWindow", u"Save this image only to power point", None))
+        self.out_png_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose output save location:", None))
+        self.save_all_images.setText(QCoreApplication.translate("MainWindow", u"Save all images", None))
         self.out_png_location_text.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -264,13 +273,8 @@ class Ui_MainWindow(object):
 "li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">No path chosen</p></body></html>", None))
-        self.save_all_ppt.setText(QCoreApplication.translate("MainWindow", u"Save all images to power point", None))
-        self.save_one_image.setText(QCoreApplication.translate("MainWindow", u"Save this image only", None))
-        self.save_all_dfs.setText(QCoreApplication.translate("MainWindow", u"Save all cleaned dataframes to exel", None))
-        self.save_all_images.setText(QCoreApplication.translate("MainWindow", u"Save all images", None))
-        self.save_one_ppt.setText(QCoreApplication.translate("MainWindow", u"Save this image only to power point", None))
-        self.out_png_location_button.setText(QCoreApplication.translate("MainWindow", u"Choose output save location:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Graphs will appear here after tests tun", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
+        self.color_options.setText(QCoreApplication.translate("MainWindow", u"Color Options", None))
     # retranslateUi
 
