@@ -145,29 +145,27 @@ class Cleaner(QtCore.QObject):
             else:
                 measured_col_names = [df.columns[i] for i in cleaned_measured_cols]
 
-            # Check if cleaned columns have only one value and are valid
-            if len(mice_col_names) == 1 and len(grp_col_names) == 1 and len(beh_col_names) == 1:
+            # Check if cleaned columns have only one value and are valid, then rotates data
+            if len(mice_col_names) == 1 and len(grp_col_names) == 1 and measured_col_names != ['Unspecified']:
                 if (0 <= cleaned_mice_cols[0] < df.shape[1]) and (0 <= cleaned_grp_cols[0] < df.shape[1]) and (0 <= cleaned_beh_cols[0] < df.shape[1]):
                     mice_col_name = mice_col_names[0]
                     grp_col_name = grp_col_names[0]
                     beh_col_name = beh_col_names[0]
-
                     unique_beh_col_names = df[beh_col_name].unique()
                     dfs = []
+
                     for measured_col_name in measured_col_names:
                         # Create a new DataFrame with unique_beh_col_names as columns
                         new_df = pd.DataFrame(columns=[grp_col_name, mice_col_name] + list(unique_beh_col_names))  # Include grp_col_name and mice_col_name at the front
+
                         for idx, beh_val in enumerate(df[beh_col_name]):
                             new_df.loc[idx, grp_col_name] = df[grp_col_name][idx]  # Assign grp_col_name value
                             new_df.loc[idx, mice_col_name] = df[mice_col_name][idx]  # Assign mice_col_name value
                             new_df.loc[idx, beh_val] = df[measured_col_name][idx]  # Assign measured values to corresponding behavior columns
+                            print("here")
 
                         # Collapse the DataFrame to have only one row for each unique value in mice_col_name
                         new_df = new_df.groupby([grp_col_name, mice_col_name]).first().reset_index()
-
-                        # Fill missing values with 0
-                        # pd.set_option('future.no_silent_downcasting', True)
-                        # new_df.fillna(0, inplace=True)
                         dfs.append(new_df)
 
                     # Return array of DataFrames and measured_col_names
