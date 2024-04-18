@@ -11,30 +11,11 @@ class Tester(QtCore.QObject):
 
     def get_description(self, data):
         try:
-            #     df = pd.DataFrame(data)
+            if not data:
+                return None
             description = describe(data)._asdict()
             sem_value = sem(data)
-
-            #     nobs = len(df)
-            #     variance = df.var()
-            #     skewness = df.skew()
-            #     kurtosis = df.kurtosis()
-                # sem = description.sem()
             description['sem'] = sem_value
-
-            # print(description)
-            #     # Add additional statistics to the DataFrame
-            #     description.loc['nobs'] = nobs
-            #     description.loc['variance'] = variance
-            #     description.loc['skewness'] = skewness
-            #     description.loc['kurtosis'] = kurtosis
-                # description.loc['sem'] = sem
-
-            #     # Convert DataFrame to dictionary
-            #     describe_dict = description.to_dict()
-                # describe_dict = describe_dict[0]
-
-                # return describe_dict
             return description
 
         except Exception as e:
@@ -43,16 +24,12 @@ class Tester(QtCore.QObject):
 
     def ttest(self, grp1, grp2, ttest_type, unique_grp_col_names, measured_col_name, beh_col_name):
         try:
-            grp1_all_none = all((value is None or math.isnan(value)) for value in grp1)
-            grp2_all_none = all((value is None or math.isnan(value)) for value in grp2)
-            grp1_some_none = any((value is not None or math.isnan(value)) for value in grp1) and any((value is None or not math.isnan(value)) for value in grp1)
-            grp2_some_none = any((value is not None or math.isnan(value)) for value in grp2) and any((value is None or not math.isnan(value)) for value in grp2)
+            # Remove missing values
+            grp1 = [value for value in grp1 if (value is not None and not math.isnan(value))]
+            grp2 = [value for value in grp2 if (value is not None and not math.isnan(value))]
 
-            # Remove Nones if there are some real values
-            if grp1_some_none:
-                grp1 = [value for value in grp1 if (value is not None and not math.isnan(value))]
-            if grp2_some_none:
-                grp2 = [value for value in grp2 if (value is not None and not math.isnan(value))]
+            grp1_all_none = all(((value is None or math.isnan(value)) or not grp1) for value in grp1)
+            grp2_all_none = all(((value is None or math.isnan(value)) or not grp2) for value in grp2)
 
             # If any group is all None, return it as is
             if grp1_all_none and grp2_all_none:
@@ -76,15 +53,6 @@ class Tester(QtCore.QObject):
                 t_statistic = None
                 p_value = None
 
-            # self.main_window.append_prog_messages(
-            #     f"T-Test Results for {measured_col_name} and {beh_col_name}:\n"
-            #     f"Group {unique_grp_col_names[0]}: {grp1}\n"
-            #     f"Group {unique_grp_col_names[1]}: {grp2}\n"
-            #     f"T-Statistic: {t_statistic}\n"
-            #     f"P-Value: {p_value}\n"
-            #     f"Describe {unique_grp_col_names[0]}: {describe1}\n"
-            #     f"Describe {unique_grp_col_names[1]}: {describe2}"
-            # )
             return unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2
 
         except Exception as e:

@@ -162,7 +162,6 @@ class Cleaner(QtCore.QObject):
                             new_df.loc[idx, grp_col_name] = df[grp_col_name][idx]  # Assign grp_col_name value
                             new_df.loc[idx, mice_col_name] = df[mice_col_name][idx]  # Assign mice_col_name value
                             new_df.loc[idx, beh_val] = df[measured_col_name][idx]  # Assign measured values to corresponding behavior columns
-                            print("here")
 
                         # Collapse the DataFrame to have only one row for each unique value in mice_col_name
                         new_df = new_df.groupby([grp_col_name, mice_col_name]).first().reset_index()
@@ -203,6 +202,7 @@ class Cleaner(QtCore.QObject):
                             # Perform ttests and graph
                             tester = Tester(self.main_window)
                             grapher = Grapher(self.main_window)
+
                             unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2 = tester.ttest(grp1, grp2, test_type, unique_grp_col_names, measured_col_names[i], beh_col_name)
                             image = grapher.graph_ttest(unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2)
                             images.append(image)
