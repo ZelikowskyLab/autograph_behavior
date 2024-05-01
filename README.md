@@ -1,8 +1,9 @@
 # autograph_behavior
 Calculating statistics and making graphs of behavioral data
 
-## Download autograph_behavior
-  - Download the executable file [coming soon](link) to run the program on your computer.
+## Download the program
+  - Download the latest [executable file](dist/autograph_behavior_v0.3.exe) to run the program on your computer.
+  - Program still in Alpha version and not recommended for actual use.
 
 ## Using autograph_behavior
   - Instructions coming soon.

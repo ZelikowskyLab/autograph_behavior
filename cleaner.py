@@ -3,7 +3,7 @@ import os
 import re
 import numpy as np
 import pandas as pd
-from PyQt6 import QtCore
+from PySide6 import QtCore
 from grapher import Grapher
 from tester import Tester
 
