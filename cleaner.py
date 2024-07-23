@@ -32,7 +32,7 @@ class Cleaner(QtCore.QObject):
             self.main_window.update_progress_bar(50)
 
             # Get groups data to run tests on then display graphs
-            self.main_window.add_graphs(self.get_grp_data(self.main_window.get_test_type(), self.main_window.get_cleaned_dfs(), mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names))
+            self.main_window.add_graphs(self.get_images_from_test_and_graph(self.main_window.get_test_type(), self.main_window.get_cleaned_dfs(), mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names))
             self.main_window.append_prog_messages("Tests ran.")
             self.main_window.update_progress_bar(100)
 
@@ -180,18 +180,24 @@ class Cleaner(QtCore.QObject):
             return None, None
 
     # Method to get groups and perform statistical tests based on the selected test type
-    def get_grp_data(self, test_type, cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, measured_col_names):
+    def get_images_from_test_and_graph(self, test_type, cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, measured_col_names):
         try:
             images = []
-            if test_type == "Independent T-test":
 
+            # Check test type
+            if test_type == "Independent T-test" or test_type == "Dependent T-test":
+                # Update progress bar
                 percent_increment = 50 / len(cleaned_dfs)
                 target_percent = 50 + percent_increment
 
+                # For each cleaned df, find the number of groups
                 for i, df in enumerate(cleaned_dfs):
                     unique_grp_col_names = df[grp_col_names[0]].unique()
+                    # If there are two groups
                     if len(unique_grp_col_names) == 2:
+                        # For each behavior
                         for beh_col_name in unique_beh_col_names:
+                            # Get the two groups to run tests on as lists
                             grp1 = df[df[grp_col_names[0]] == unique_grp_col_names[0]][beh_col_name].tolist()
                             grp2 = df[df[grp_col_names[0]] == unique_grp_col_names[1]][beh_col_name].tolist()
 
@@ -202,19 +208,23 @@ class Cleaner(QtCore.QObject):
                             # Perform ttests and graph
                             tester = Tester(self.main_window)
                             grapher = Grapher(self.main_window)
-
+                            # Get t-test results
                             unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2 = tester.ttest(grp1, grp2, test_type, unique_grp_col_names, measured_col_names[i], beh_col_name)
+                            # Graph the results and turn into image
                             image = grapher.graph_ttest(unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2)
                             images.append(image)
                     else:
-                        self.main_window.append_prog_messages("Error: Wrong number of groups for Independent T-test.")
+                        self.main_window.append_prog_messages("Error: Wrong number of groups for T-test.")
 
+                    # Update progress bar
                     percent_increment += percent_increment
                     self.main_window.update_progress_bar(target_percent)
+
+            # Todo: elif check for anova
             else:
-                self.main_window.append_prog_messages("Error: Wrong test type.")
+                self.main_window.append_prog_messages("Error: Invalid test type.")
 
             return np.array(images)
 
         except Exception as e:
-            self.main_window.append_prog_messages(f"Error occurred during get_grp_data: {e}")
+            self.main_window.append_prog_messages(f"Error occurred during get_images_from_test_and_graph: {e}")

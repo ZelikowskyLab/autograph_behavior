@@ -82,3 +82,8 @@ output/
 
 #5-1-24
 build/
+
+#7-22-24
+autograph_behavior.pyproject
+autograph_behavior.pyproject.user
+mainwindow.spec

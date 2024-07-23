@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>902</width>
-    <height>729</height>
+    <width>932</width>
+    <height>786</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
       <x>10</x>
       <y>10</y>
       <width>351</width>
-      <height>441</height>
+      <height>491</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="input_params">
@@ -199,8 +199,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <rect>
       <x>370</x>
       <y>538</y>
-      <width>401</width>
-      <height>121</height>
+      <width>521</width>
+      <height>111</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="save_graph_options">
@@ -261,16 +261,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
       </widget>
      </item>
     </layout>
-   </widget>
-   <widget class="QTextBrowser" name="prog_msgs_text">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>450</y>
-      <width>351</width>
-      <height>201</height>
-     </rect>
-    </property>
    </widget>
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
@@ -354,14 +344,24 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <string>Color Options</string>
     </property>
    </widget>
+   <widget class="QTextBrowser" name="prog_msgs_text">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>500</y>
+      <width>351</width>
+      <height>151</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>902</width>
-     <height>21</height>
+     <width>932</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>

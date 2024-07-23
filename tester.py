@@ -23,15 +23,20 @@ class Tester(QtCore.QObject):
             return None
 
     def ttest(self, grp1, grp2, ttest_type, unique_grp_col_names, measured_col_name, beh_col_name):
-        try:
+        try:            
+            # Identify missing values before removing them (used to determine whether or not to do a dep ttest)
+            grp1_missing_indexes = [i for i, value in enumerate(grp1) if value is None or math.isnan(value)]
+            grp2_missing_indexes = [i for i, value in enumerate(grp2) if value is None or math.isnan(value)]
+
             # Remove missing values
             grp1 = [value for value in grp1 if (value is not None and not math.isnan(value))]
             grp2 = [value for value in grp2 if (value is not None and not math.isnan(value))]
 
+            # Check if an entire group is missing
             grp1_all_none = all(((value is None or math.isnan(value)) or not grp1) for value in grp1)
             grp2_all_none = all(((value is None or math.isnan(value)) or not grp2) for value in grp2)
 
-            # If any group is all None, return it as is
+            # If both groups are missing, dont perform tests and return nones
             if grp1_all_none and grp2_all_none:
                 return unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, None, None, None, None
 
@@ -48,7 +53,12 @@ class Tester(QtCore.QObject):
             if ttest_type == "Independent T-test":
                 t_statistic, p_value = stats.ttest_ind(grp1, grp2)
             elif ttest_type == "Dependent T-test":
-                t_statistic, p_value = stats.ttest_rel(grp1, grp2)
+                # Proceed with the dependent t-test only if missing indexes of both groups are the same (the same mouse is missing from each group)
+                if grp1_missing_indexes == grp2_missing_indexes:
+                    t_statistic, p_value = stats.ttest_rel(grp1, grp2)
+                else:
+                    t_statistic = None
+                    p_value = None
             else:
                 t_statistic = None
                 p_value = None
