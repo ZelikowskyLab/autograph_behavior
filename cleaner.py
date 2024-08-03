@@ -17,49 +17,57 @@ class Cleaner(QtCore.QObject):
         try:
             # Convert file to df
             df = self.file_to_df(path)
-            self.main_window.append_prog_messages("File loaded.")
+            if df is None:
+                return
+            self.main_window.append_prog_messages("File loaded.", message_type='info')
             self.main_window.update_progress_bar(10)
 
             # Clean all column entries
             cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols = self.clean_col_names(df, mice_cols, grp_cols, beh_cols, measured_cols)
-            self.main_window.append_prog_messages("Columns cleaned.")
+            if None in [cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols]:
+                return
+            self.main_window.append_prog_messages("Columns cleaned.", message_type='info')
             self.main_window.update_progress_bar(25)
 
             # Reformat
             self.main_window.cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names = self.reformat(df, cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols)
-            self.main_window.append_prog_messages("Dataframes reformatted.")
+            if self.main_window.cleaned_dfs is None:
+                return
+            self.main_window.append_prog_messages("Dataframes reformatted.", message_type='info')
             self.main_window.set_unique_beh_col_names(unique_beh_col_names)
             self.main_window.update_progress_bar(50)
 
             # Get groups data to run tests on then display graphs
-            self.main_window.add_graphs(self.get_images_from_test_and_graph(self.main_window.get_test_type(), self.main_window.get_cleaned_dfs(), mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names))
-            self.main_window.append_prog_messages("Tests ran.")
+            images = self.get_images_from_test_and_graph(self.main_window.get_test_type(), self.main_window.get_cleaned_dfs(), mice_col_names, grp_col_names, unique_beh_col_names, self.main_window.measured_col_names)
+            self.main_window.add_graphs(images)
+            self.main_window.append_prog_messages("Tests completed and graphs displayed.", message_type='done')
             self.main_window.update_progress_bar(100)
 
         except Exception as e:
-            self.main_window.append_prog_messages(f"Error occurred while cleaning: {e}")
+            self.main_window.append_prog_messages(f"Error occurred while cleaning: {e}", message_type='err')
 
     # Converts file to DataFrame
     def file_to_df(self, path):
         try:
+            # Figure out file extension
             _, file_extension = os.path.splitext(path)
+            # Check that file extension is valid
             if file_extension.lower() == '.csv':
                 df = pd.read_csv(path)
             elif file_extension.lower() == '.xlsx':
                 df = pd.read_excel(path)
             else:
-                self.main_window.append_prog_messages("Unsupported file format.")
+                self.main_window.append_prog_messages("Unsupported file format.", message_type='err')
                 return None
 
             self.main_window.update_progress_bar(5)
 
-            self.main_window.append_prog_messages("Converted file to DataFrame.")
-            self.main_window.append_prog_messages(f"DataFrame size: {df.size} elements")
-            self.main_window.append_prog_messages(f"DataFrame shape: {df.shape[0]} rows, {df.shape[1]} columns")
+            # Notify user of dataframe size and shape
+            self.main_window.append_prog_messages(f"DataFrame loaded. Size: {df.size} elements, Shape: {df.shape[0]} rows, {df.shape[1]} columns.", message_type='info')
             return df
 
         except Exception as e:
-            self.main_window.append_prog_messages(f"Error occurred while reading file: {e}")
+            self.main_window.append_prog_messages(f"Error occurred while reading file: {e}", message_type='err')
             return None
 
     # Clean column names
@@ -73,8 +81,8 @@ class Cleaner(QtCore.QObject):
             return cleaned_mice_cols, cleaned_grp_cols, cleaned_beh_cols, cleaned_measured_cols
 
         except Exception as e:
-            self.main_window.append_prog_messages(f"Error cleaning column names: {e}")
-            return None, None, None
+            self.main_window.append_prog_messages(f"Error cleaning column names: {e}", message_type='err')
+            return None, None, None, None
 
     # Helper method to clean one list of columns
     def clean_col_list(self, df, col_list):
@@ -123,7 +131,7 @@ class Cleaner(QtCore.QObject):
             return col_index
 
         except ValueError:
-            self.main_window.append_prog_messages(f"Column '{col_name}' not found.")
+            self.main_window.append_prog_messages(f"Column '{col_name}' not found.", message_type='err')
             return []
 
     # Convert alphabetic characters to numeric value (0-based)
@@ -147,7 +155,7 @@ class Cleaner(QtCore.QObject):
 
             # Check if cleaned columns have only one value and are valid, then rotates data
             if len(mice_col_names) == 1 and len(grp_col_names) == 1 and measured_col_names != ['Unspecified']:
-                if (0 <= cleaned_mice_cols[0] < df.shape[1]) and (0 <= cleaned_grp_cols[0] < df.shape[1]) and (0 <= cleaned_beh_cols[0] < df.shape[1]):
+                if all(0 <= col < df.shape[1] for col in cleaned_mice_cols + cleaned_grp_cols + cleaned_beh_cols):
                     mice_col_name = mice_col_names[0]
                     grp_col_name = grp_col_names[0]
                     beh_col_name = beh_col_names[0]
@@ -156,12 +164,12 @@ class Cleaner(QtCore.QObject):
 
                     for measured_col_name in measured_col_names:
                         # Create a new DataFrame with unique_beh_col_names as columns
-                        new_df = pd.DataFrame(columns=[grp_col_name, mice_col_name] + list(unique_beh_col_names))  # Include grp_col_name and mice_col_name at the front
+                        new_df = pd.DataFrame(columns=[grp_col_name, mice_col_name] + list(unique_beh_col_names))
 
                         for idx, beh_val in enumerate(df[beh_col_name]):
-                            new_df.loc[idx, grp_col_name] = df[grp_col_name][idx]  # Assign grp_col_name value
-                            new_df.loc[idx, mice_col_name] = df[mice_col_name][idx]  # Assign mice_col_name value
-                            new_df.loc[idx, beh_val] = df[measured_col_name][idx]  # Assign measured values to corresponding behavior columns
+                            new_df.loc[idx, grp_col_name] = df[grp_col_name][idx]
+                            new_df.loc[idx, mice_col_name] = df[mice_col_name][idx]
+                            new_df.loc[idx, beh_val] = df[measured_col_name][idx]
 
                         # Collapse the DataFrame to have only one row for each unique value in mice_col_name
                         new_df = new_df.groupby([grp_col_name, mice_col_name]).first().reset_index()
@@ -170,14 +178,13 @@ class Cleaner(QtCore.QObject):
                     # Return array of DataFrames and measured_col_names
                     return dfs, mice_col_names, grp_col_names, unique_beh_col_names, measured_col_names
 
-            # This means that one of the cleaned columns has more than one value (more than one behavior column)
             else:
                 dfs = [df]
                 return dfs, mice_col_names, grp_col_names, beh_col_names, measured_col_names
 
         except Exception as e:
-            self.main_window.append_prog_messages(f"Error occurred during reformatting: {e}")
-            return None, None
+            self.main_window.append_prog_messages(f"Error occurred during reformatting: {e}", message_type='err')
+            return None, None, None, None, None
 
     # Method to get groups and perform statistical tests based on the selected test type
     def get_images_from_test_and_graph(self, test_type, cleaned_dfs, mice_col_names, grp_col_names, unique_beh_col_names, measured_col_names):
@@ -186,45 +193,39 @@ class Cleaner(QtCore.QObject):
 
             # Check test type
             if test_type == "Independent T-test" or test_type == "Dependent T-test":
-                # Update progress bar
                 percent_increment = 50 / len(cleaned_dfs)
                 target_percent = 50 + percent_increment
 
-                # For each cleaned df, find the number of groups
                 for i, df in enumerate(cleaned_dfs):
+                    mice_IDs = df[mice_col_names[0]].tolist()
+                    grp_IDs = df[grp_col_names[0]].tolist()
+
                     unique_grp_col_names = df[grp_col_names[0]].unique()
-                    # If there are two groups
                     if len(unique_grp_col_names) == 2:
-                        # For each behavior
                         for beh_col_name in unique_beh_col_names:
-                            # Get the two groups to run tests on as lists
                             grp1 = df[df[grp_col_names[0]] == unique_grp_col_names[0]][beh_col_name].tolist()
                             grp2 = df[df[grp_col_names[0]] == unique_grp_col_names[1]][beh_col_name].tolist()
 
-                            # Convert value to seconds if it is a datetime.time datatype and is not None.
                             grp1 = [(val.hour * 3600 + val.minute * 60 + val.second + round(val.microsecond / 10**6, 1)) if isinstance(val, datetime.time) and val is not None else val for val in grp1]
                             grp2 = [(val.hour * 3600 + val.minute * 60 + val.second + round(val.microsecond / 10**6, 1)) if isinstance(val, datetime.time) and val is not None else val for val in grp2]
 
-                            # Perform ttests and graph
                             tester = Tester(self.main_window)
                             grapher = Grapher(self.main_window)
-                            # Get t-test results
-                            unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2 = tester.ttest(grp1, grp2, test_type, unique_grp_col_names, measured_col_names[i], beh_col_name)
-                            # Graph the results and turn into image
-                            image = grapher.graph_ttest(unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2)
+                            unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, t_statistic, p_value, describe1, describe2 = tester.ttest(grp1, grp2, test_type, mice_IDs, grp_IDs, unique_grp_col_names, measured_col_names[i], beh_col_name)
+                            image = grapher.graph_ttest(unique_grp_col_names, measured_col_name, beh_col_name, grp1, grp2, test_type, t_statistic, p_value, describe1, describe2)
                             images.append(image)
-                    else:
-                        self.main_window.append_prog_messages("Error: Wrong number of groups for T-test.")
 
-                    # Update progress bar
+                    else:
+                        self.main_window.append_prog_messages("Error: Incorrect number of groups for T-test.", message_type='err')
+
                     percent_increment += percent_increment
                     self.main_window.update_progress_bar(target_percent)
 
-            # Todo: elif check for anova
             else:
-                self.main_window.append_prog_messages("Error: Invalid test type.")
+                self.main_window.append_prog_messages("Error: Invalid test type specified.", message_type='err')
 
             return np.array(images)
 
         except Exception as e:
-            self.main_window.append_prog_messages(f"Error occurred during get_images_from_test_and_graph: {e}")
+            self.main_window.append_prog_messages(f"Error occurred during get_images_from_test_and_graph: {e}", message_type='err')
+            return np.array([])  # Return empty array if there was an error

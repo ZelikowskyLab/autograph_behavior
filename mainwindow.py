@@ -9,10 +9,8 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QFileDialog, QMessageB
                                QVBoxLayout, QLabel, QWidget, QSizePolicy, QColorDialog)
 from cleaner import Cleaner
 
-# Important:
-# You need to run the following command to generate the ui_mainwindow.py file
-#     pyside6-uic mainwindow.ui -o ui_mainwindow.py, or
-#     pyside2-uic mainwindow.ui -o ui_mainwindow.py
+# Important: You need to run the following command to generate the ui_mainwindow.py file
+# pyside6-uic mainwindow.ui -o ui_mainwindow.py, or pyside2-uic mainwindow.ui -o ui_mainwindow.py
 from ui_mainwindow import Ui_MainWindow
 
 class MainWindow(QMainWindow):
@@ -26,6 +24,10 @@ class MainWindow(QMainWindow):
         self.cleaned_dfs = None
         self.measured_col_names = None
         self.unique_beh_col_names = None
+
+        # Set remove_mice_box hidden by default
+        self.ui.remove_mice_box.setVisible(False)
+        self.is_dep_ttest = False
 
         # These variables will be set by the user input
         self.test_type = ""
@@ -53,12 +55,56 @@ class MainWindow(QMainWindow):
         self.ui.save_all_images.clicked.connect(self.save_graphs)
         self.ui.save_one_image.clicked.connect(self.save_graph)
         self.ui.color_options.clicked.connect(self.color_popup)
+        self.ui.save_prog_msgs.clicked.connect(self.save_prog_msgs_to_file)
+        self.ui.copy_prog_msgs.clicked.connect(self.copy_prog_msgs)
 
         self.initialize_tabs()
 
+    def copy_prog_msgs(self):
+        try:
+            prog_messages = self.ui.prog_msgs_text.toPlainText()
+            if not prog_messages:
+                self.append_prog_messages("Error: No program messages to copy.", message_type='err')
+                return
+            clipboard = QApplication.clipboard()
+            clipboard.setText(prog_messages)
+
+            self.append_prog_messages("Program messages copied to clipboard.", message_type='info')
+        except Exception as e:
+            self.append_prog_messages(f"Error: {e}", message_type='err')
+
+    def save_prog_msgs_to_file(self):
+        try:
+            if not self.out_path:
+                self.append_prog_messages("Error: Please select an output folder.", message_type='err')
+                return
+            prog_messages = self.ui.prog_msgs_text.toPlainText()
+            if not prog_messages:
+                self.append_prog_messages("Error: No program messages to save.", message_type='err')
+                return
+
+            timestamp = datetime.now().strftime("%m-%d-%Y %H-%M-%S")
+            filename = f"programMessages_{timestamp}.txt"
+            filename = filename.replace(":", "_").replace("-", "_")
+            filepath = os.path.join(self.out_path, filename).replace("\\", "/")
+
+            # Save the messages to a file
+            with open(filepath, "w") as file:
+                file.write(prog_messages)
+
+            self.append_prog_messages(f"Program messages saved to {filename}.", message_type='done')
+        except Exception as e:
+            self.append_prog_messages(f"Error: {e}", message_type='err')
+
+    def update_remove_mice_box_visibility(self):
+        self.ui.remove_mice_box.setVisible(self.is_dep_ttest)
+
+    def is_remove_mice_checked(self):
+        return self.ui.remove_mice_box.isChecked()
+
     def update_progress_bar(self, target_percent):
         if target_percent == 0:
-            self.ui.progress_bar.setValue(0);
+            self.ui.progress_bar.setValue(0)
 
         else:
             while self.ui.progress_bar.value() < target_percent:
@@ -79,44 +125,45 @@ class MainWindow(QMainWindow):
         self.ui.tabWidget.addTab(initial_tab, "")
 
     def add_graphs(self, images):
-           # Remove all existing tabs and clear graph_names
-           while self.ui.tabWidget.count() > 0:
-               self.ui.tabWidget.removeTab(0)
+        # Remove all existing tabs and clear graph_names
+        while self.ui.tabWidget.count() > 0:
+            self.ui.tabWidget.removeTab(0)
 
-           self.graph_names.clear()
-           self.all_graphs = []
+        self.graph_names.clear()
+        self.all_graphs = []
 
-           for measured_idx, measured_name in enumerate(self.measured_col_names):
-               for beh_idx, beh_name in enumerate(self.unique_beh_col_names):
-                   tab = QWidget()
-                   layout = QVBoxLayout()
-                   label = QLabel()
+        for measured_idx, measured_name in enumerate(self.measured_col_names):
+            for beh_idx, beh_name in enumerate(self.unique_beh_col_names):
+                tab = QWidget()
+                layout = QVBoxLayout()
+                label = QLabel()
 
-                   # Set alignment properties
-                   label.setAlignment(Qt.AlignCenter | Qt.AlignHCenter)
-                   pixmap = QPixmap.fromImage(images[measured_idx * len(self.unique_beh_col_names) + beh_idx])
+                # Set alignment properties
+                label.setAlignment(Qt.AlignCenter | Qt.AlignHCenter)
+                pixmap = QPixmap.fromImage(images[measured_idx * len(self.unique_beh_col_names) + beh_idx])
 
-                   # Scale pixmap to fit label
-                   pixmap = pixmap.scaled(label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                   label.setPixmap(pixmap)
-                   label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                # Scale pixmap to fit label
+                pixmap = pixmap.scaled(label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                label.setPixmap(pixmap)
+                label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-                   layout.addWidget(label)
-                   tab.setLayout(layout)
-                   tab_name = f"{measured_name}_{beh_name}"
-                   self.ui.tabWidget.addTab(tab, tab_name)
+                layout.addWidget(label)
+                tab.setLayout(layout)
+                tab_name = f"{measured_name}_{beh_name}"
+                self.ui.tabWidget.addTab(tab, tab_name)
 
-                   self.graph_names.append(tab_name)
-                   self.all_graphs.append(pixmap)
+                self.graph_names.append(tab_name)
+                self.all_graphs.append(pixmap)
 
-    # Save the graph corresponding to the currently focused tab
+        self.append_prog_messages(f"Added {len(self.graph_names)} graphs to tabs.", message_type='done')
+
     def save_graph(self):
         if not self.all_graphs:
-            self.append_prog_messages("Error: No graphs to save.")
+            self.append_prog_messages("Error: No graphs to save.", message_type='err')
             return
 
         if not self.out_path:
-            self.append_prog_messages("Error: Please select an output folder.")
+            self.append_prog_messages("Error: Please select an output folder.", message_type='err')
             return
 
         try:
@@ -135,22 +182,22 @@ class MainWindow(QMainWindow):
                 else:
                     image.save(image_path, "PNG")
             else:
-                self.append_prog_messages("Error: No tab selected.")
-            self.append_prog_messages(f"Graph '{graph_name}' saved.")
+                self.append_prog_messages("Error: No tab selected.", message_type='err')
+                return
 
+            self.append_prog_messages(f"Graph '{graph_name}' saved.", message_type='done')
             self.update_progress_bar(100)
             self.update_progress_bar(0)
         except Exception as e:
-            self.append_prog_messages(f"Error: {e}")
+            self.append_prog_messages(f"Error: {e}", message_type='err')
 
-    # Save all images from all_graphs to out_path
     def save_graphs(self):
         if not self.all_graphs:
-            self.append_prog_messages("Error: No graphs to save.")
+            self.append_prog_messages("Error: No graphs to save.", message_type='err')
             return
 
         if not self.out_path:
-            self.append_prog_messages("Error: Please select an output folder.")
+            self.append_prog_messages("Error: Please select an output folder.", message_type='err')
             return
 
         try:
@@ -162,29 +209,30 @@ class MainWindow(QMainWindow):
                         continue
                     else:
                         image.save(image_path, "PNG")
-
                 else:
                     image.save(image_path, "PNG")
 
-            self.append_prog_messages("Graphs saved.")
+            self.append_prog_messages("All graphs saved successfully.", message_type='done')
             self.update_progress_bar(100)
             self.update_progress_bar(0)
 
         except Exception as e:
-            self.append_prog_messages(f"Error: {e}")
+            self.append_prog_messages(f"Error: {e}", message_type='err')
 
     def color_popup(self):
         color_dialog = QColorDialog(self)
+        self.append_prog_messages("Color dialog opened.", message_type='info')
 
-
-    # Update the statistical analysis type
     def update_test_type(self, text):
         self.set_test_type(text)
-        self.append_prog_messages(f"Test type updated: {text}")
+        self.is_dep_ttest = (self.get_test_type() == "Dependent T-test")
+        # Update the visibility of the checkbox
+        self.update_remove_mice_box_visibility()
+
+        self.append_prog_messages(f"Test type updated to '{text}'.", message_type='info')
         self.update_progress_bar(100)
         self.update_progress_bar(0)
 
-    # Depending on which button is pressed, save file/folder location to variable
     def open_file_dialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
@@ -202,10 +250,10 @@ class MainWindow(QMainWindow):
                 if self.check_file_format(file_path):
                     self.set_in_path(file_path)
                     self.ui.in_location_text.setText(file_path)
-                    self.append_prog_messages("Input file selected.")
+                    self.append_prog_messages("Input file selected.", message_type='info')
                     self.update_progress_bar(100)
                 else:
-                    self.append_prog_messages("Error: Unsupported file format.")
+                    self.append_prog_messages("Error: Unsupported file format.", message_type='err')
 
         # Select output path
         else:
@@ -214,19 +262,18 @@ class MainWindow(QMainWindow):
             if folder_path:
                 self.set_out_path(folder_path)
                 self.ui.out_png_location_text.setText(folder_path)
-                self.append_prog_messages("Output folder selected.")
+                self.append_prog_messages("Output folder selected.", message_type='info')
                 self.update_progress_bar(100)
 
         self.update_progress_bar(0)
 
-    # Checks for valid file format
     def check_file_format(self, file_path):
         ext = os.path.splitext(file_path)[-1].lower()
         return ext in self.valid_formats
 
-    # Assigns column names based on user input
     def assign_column_names(self):
         try:
+            # Get the column(s) for each
             mice_cols_input     = self.ui.mice_cols_input.toPlainText()
             grp_cols_input      = self.ui.grp_cols_input.toPlainText()
             beh_cols_input      = self.ui.beh_cols_input.toPlainText()
@@ -245,37 +292,52 @@ class MainWindow(QMainWindow):
             self.set_beh_cols(beh_cols)
             self.set_measured_cols(measured_cols)
 
-            self.append_prog_messages("Column information confirmed.")
+            self.append_prog_messages("Column information confirmed.", message_type='info')
             self.update_progress_bar(100)
             self.update_progress_bar(0)
         except Exception as e:
-            self.append_prog_messages(f"Error: {e}")
+            self.append_prog_messages(f"Error: {e}", message_type='err')
 
+    def append_prog_messages(self, message, message_type='info'):
+        """
+        Append messages to the prog_msgs_text with color coding based on message type.
 
-    # Appends to the program messages text box
-    def append_prog_messages(self, message):
+        Args:
+            message (str): The message to append.
+            message_type (str): The type of message ('error', 'completion', 'warning', 'info').
+        """
+        colors = {
+            'err': 'red',
+            'done': 'green',
+            'warn': 'orange',
+            'info': 'black'
+        }
+
+        color = colors.get(message_type, 'black')
         current_datetime = datetime.now().strftime("%m-%d-%Y %H:%M:%S")
-        self.ui.prog_msgs_text.append(f"[{current_datetime}] {message}")
 
-    # Runs the data cleaner
+        # Use HTML to apply color
+        formatted_message = f'<font color="{color}">[{current_datetime}] {message}</font>'
+        self.ui.prog_msgs_text.append(formatted_message)
+
     def run(self):
         try:
             in_path = self.get_in_path()
             if in_path:
                 if self.test_type and self.test_type != "Choose Test Type":
                     if self.mice_cols and self.grp_cols and self.beh_cols:
+                        self.append_prog_messages("Data cleaning started.", message_type='info')
                         self.cleaner.main(in_path, self.mice_cols, self.grp_cols, self.beh_cols, self.measured_cols)
                     else:
-                        self.append_prog_messages("Error: Please enter and confirm all column info.")
+                        self.append_prog_messages("Error: Please enter and confirm all required column info.", message_type='err')
                 else:
-                    self.append_prog_messages("Error: Please choose a test type to perform.")
+                    self.append_prog_messages("Error: Please choose a test type to perform.", message_type='err')
             else:
-                self.append_prog_messages("Error: No input file selected.")
+                self.append_prog_messages("Error: No input file selected.", message_type='err')
             self.update_progress_bar(0)
         except Exception as e:
-            self.append_prog_messages(f"Error: {e}")
+            self.append_prog_messages(f"Error: {e}", message_type='err')
 
-    # Save cleaned DataFrames to specified directory
     def save_all_dfs(self):
         try:
             if self.cleaned_dfs:
@@ -291,21 +353,20 @@ class MainWindow(QMainWindow):
                             # Truncate sheet name if greater than or equal to 31 characters
                             if len(measured_col_name) >= 31:
                                 measured_col_name = measured_col_name[:31]
-                                self.append_prog_messages(f"Sheet name '{measured_col_name}' truncated.")
+                                self.append_prog_messages(f"Sheet name '{measured_col_name}' truncated.", message_type='warn')
                             reformatted_df.to_excel(writer, sheet_name=measured_col_name, index=False)
-                    self.append_prog_messages("All reformatted DataFrames saved.")
+                    self.append_prog_messages("All reformatted DataFrames saved.", message_type='done')
                     self.update_progress_bar(100)
                     self.update_progress_bar(0)
                 else:
-                    self.append_prog_messages("Error: Please select an output folder.")
+                    self.append_prog_messages("Error: Please select an output folder.", message_type='err')
                     self.update_progress_bar(0)
             else:
-                self.append_prog_messages("Error: No reformatted DataFrames to save.")
+                self.append_prog_messages("Error: No reformatted DataFrames to save.", message_type='err')
                 self.update_progress_bar(0)
         except Exception as e:
-            self.append_prog_messages(f"Error: {e}")
+            self.append_prog_messages(f"Error: {e}", message_type='err')
 
-    # User confirm overwrite file if already exists
     def overwrite_popup(self, output_path):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Question)
@@ -316,10 +377,10 @@ class MainWindow(QMainWindow):
 
         result = msg_box.exec()
         if result == QMessageBox.Yes:
-            self.append_prog_messages(f"File {output_path} overwritten")
+            self.append_prog_messages(f"File {output_path} will be overwritten.", message_type='warn')
             return True  # User wants to overwrite the file
         else:
-            self.append_prog_messages("Save operation canceled.")
+            self.append_prog_messages("Save operation canceled.", message_type='info')
             return False  # User canceled the save operation
 
     # Getters
