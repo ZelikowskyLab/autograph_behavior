@@ -87,3 +87,7 @@ build/
 autograph_behavior.pyproject
 autograph_behavior.pyproject.user
 mainwindow.spec
+
+#8_23_24
+stepsToMakeEXE.txt
+autograph_behavior_v0.5.spec
